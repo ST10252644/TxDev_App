@@ -5,6 +5,14 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_home">
 
+    <activity
+        android:id="@+id/loginFragment"
+        android:name="com.iie.st10089153.txdevsystems_app.ui.login.LoginActivity"
+        android:label="Login" >
+
+    </activity>
+
+
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.iie.st10089153.txdevsystems_app.ui.home.HomeFragment"
