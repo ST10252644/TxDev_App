@@ -5,6 +5,14 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_home">
 
+    <activity
+        android:id="@+id/loginFragment"
+        android:name="com.iie.st10089153.txdevsystems_app.ui.login.LoginActivity"
+        android:label="Login" >
+
+    </activity>
+
+
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.iie.st10089153.txdevsystems_app.ui.home.HomeFragment"
@@ -12,10 +20,10 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.iie.st10089153.txdevsystems_app.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_profile"
+        android:name="com.iie.st10089153.txdevsystems_app.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/navigation_notifications"
