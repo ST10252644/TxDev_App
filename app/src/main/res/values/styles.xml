@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Inactive Text Style -->
+    <style name="NavTextInactive">
+        <item name="android:fontFamily">@font/Poppins_Regular</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:letterSpacing">0.015</item> <!-- 1.5% letter spacing -->
+        <item name="android:textColor">@color/text</item>
+    </style>
+
+
+    <!-- Active Text Style -->
+    <style name="NavTextActive">
+        <item name="android:fontFamily">@font/Poppins_SemiBold</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:letterSpacing">0.015</item>
+        <item name="android:textColor">@color/text</item>
+        <item name="android:textStyle">bold</item> <!-- Semi-Bold -->
+    </style>
+
+
+    
+
+</resources>
