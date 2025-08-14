@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="27dp"
+    android:viewportWidth="24"
+    android:viewportHeight="27">
+
+    <!-- Bell body -->
+    <path
+        android:fillColor="#B8ED55"
+        android:pathData="M12,2C10.9,2 10,2.9 10,4C10,4.1 10,4.2 10,4.3C7.6,5.2 6,7.5 6,10.1V16L4,18V19H20V18L18,16V10.1C18,7.5 16.4,5.2 14,4.3C14,4.2 14,4.1 14,4C14,2.9 13.1,2 12,2Z" />
+
+    <!-- Bell clapper -->
+    <path
+        android:fillColor="#B8ED55"
+        android:pathData="M12,22C13.1,22 14,21.1 14,20H10C10,21.1 10.9,22 12,22Z" />
+
+    <!-- Small notification dot -->
+    <path
+        android:fillColor="#FF4444"
+        android:pathData="M18,3C19.66,3 21,4.34 21,6C21,7.66 19.66,9 18,9C16.34,9 15,7.66 15,6C15,4.34 16.34,3 18,3Z" />
+
+</vector>
