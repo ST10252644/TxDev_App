@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Focused state - green underline -->
+    <item android:state_focused="true">
+        <layer-list>
+            <item android:top="-2dp" android:left="-2dp" android:right="-2dp">
+                <shape android:shape="rectangle">
+                    <stroke android:width="0dp" android:color="@android:color/transparent" />
+                    <solid android:color="@android:color/transparent" />
+                </shape>
+            </item>
+            <item android:top="42dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="#9ACD32" />
+                    <size android:height="2dp" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+
+    <!-- Normal state - gray underline -->
+    <item>
+        <layer-list>
+            <item android:top="-2dp" android:left="-2dp" android:right="-2dp">
+                <shape android:shape="rectangle">
+                    <stroke android:width="0dp" android:color="@android:color/transparent" />
+                    <solid android:color="@android:color/transparent" />
+                </shape>
+            </item>
+            <item android:top="42dp">
+                <shape android:shape="rectangle">
+                    <solid android:color="#333333" />
+                    <size android:height="1dp" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+
+</selector>
