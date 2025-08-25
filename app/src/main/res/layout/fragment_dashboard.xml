@@ -9,13 +9,16 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="16dp"
+        android:background="@color/black_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/dashboardTable"/>
+        app:layout_constraintBottom_toTopOf="@+id/dashboardScroll"/>
+
 
     <!-- TableLayout for full DashboardItem data -->
     <ScrollView
+        android:id="@+id/dashboardScroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,5 +33,6 @@
             android:padding="16dp"
             android:stretchColumns="1"/>
     </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
