@@ -1,0 +1,24 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Temperature Gauge -->
+    <com.github.anastr.speedviewlib.SpeedView
+        android:id="@+id/tempGauge"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        app:sv_indicator="NeedleIndicator"
+        app:sv_indicatorColor="#D67973"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:sv_speedTextSize="18sp"
+        app:sv_tickNumber="11"
+        app:sv_unit="°C"
+        app:sv_unitTextSize="14sp"
+        app:sv_withTremble="false"
+        app:sv_centerCircleColor="@android:color/transparent"
+        app:sv_backgroundCircleColor="@android:color/transparent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
