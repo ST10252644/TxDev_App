@@ -8,6 +8,7 @@ import com.iie.st10089153.txdevsystems_app.R
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,16 +41,17 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun performLogin(username: String, password: String) {
-        val call = RetrofitClient.instance.login(username = username, password = password)
+        val call = RetrofitClient.getAuthApi(this).login(username = username, password = password)
 
         call.enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful && response.body() != null) {
                     val token = response.body()!!.access_token
-
+                    saveToken(token)
                     // TODO: Save token securely (SharedPreferences or encrypted storage)
 
                     Toast.makeText(this@LoginActivity, "Login successful!", Toast.LENGTH_SHORT).show()
+
 
                     // Navigate to MainActivity
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
@@ -65,4 +67,12 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
+
+    private fun saveToken(token: String) {
+        val sharedPref = getSharedPreferences("auth_prefs", MODE_PRIVATE)
+        sharedPref.edit()
+            .putString("access_token", token)
+            .apply()
+    }
+
 }
