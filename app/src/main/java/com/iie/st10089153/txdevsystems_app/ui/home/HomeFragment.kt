@@ -1,17 +1,20 @@
 package com.iie.st10089153.txdevsystems_app.ui.home
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.iie.st10089153.txdevsystems_app.databinding.FragmentHomeBinding
-import com.iie.st10089153.txdevsystems_app.ui.login.LoginActivity
+import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnit
+import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnitsRequest
+import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class HomeFragment : Fragment() {
 
@@ -28,20 +31,30 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        // Observe ViewModel text
-        val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+        // Setup RecyclerView
+        binding.deviceRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Set click listener on the button
-        binding.buttonGoToLogin.setOnClickListener {
-            Log.d("HomeFragment", "Login button clicked")
-            Toast.makeText(requireContext(), "Going to Login", Toast.LENGTH_SHORT).show()
-            val intent = Intent(requireContext(), LoginActivity::class.java)
-            startActivity(intent)
-        }
+        // Call API
+        val api = RetrofitClient.getAvailableUnitsApi(requireContext())
+        val call = api.getAvailableUnits(AvailableUnitsRequest(status = "Active"))
 
+        call.enqueue(object : Callback<List<AvailableUnit>> {
+            override fun onResponse(
+                call: Call<List<AvailableUnit>>,
+                response: Response<List<AvailableUnit>>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val units = response.body()!!
+                    binding.deviceRecyclerView.adapter = DeviceAdapter(units)
+                } else {
+                    Toast.makeText(requireContext(), "No units found", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<AvailableUnit>>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error: ${t.localizedMessage}", Toast.LENGTH_LONG).show()
+            }
+        })
 
         return binding.root
     }

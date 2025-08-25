@@ -13,4 +13,6 @@
     <color name="tertiary">#1E1E1E</color>
     <color name="text">#ffffff</color>
     <color name="uneditable">#9E9E9E</color>
+    <color name="green_success">#B8ED55</color> <!-- example green -->
+    <color name="red_error">#EE0202</color>     <!-- example red -->
 </resources>

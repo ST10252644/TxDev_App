@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.fragment.testing)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -58,5 +59,38 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
+    //Gauge implementation
+    implementation("com.github.anastr:speedviewlib:1.6.1")
 
+
+    // Unit Testing
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("io.mockk:mockk:1.13.10")
+
+    // Android Testing
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // Robolectric for Android unit tests
+    testImplementation("org.robolectric:robolectric:4.10.3")
+
+    // MockWebServer for API testing
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
+
+    // Fragment testing
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
+
+    // Coroutines testing
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+
+    // Architecture Components testing
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    // For testing SharedPreferences
+    testImplementation("androidx.test:core:1.5.0")
+
+    // Gson for JSON testing
+    testImplementation("com.google.code.gson:gson:2.10.1")
 }
