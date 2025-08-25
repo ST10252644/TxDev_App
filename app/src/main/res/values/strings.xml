@@ -3,6 +3,20 @@
     <string name="title_home">Home</string>
     <string name="title_profile">Profile</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_dashboard">Dashboard</string>
     <string name="back">Back</string>
     <string name="search">Search</string>
+
+    <string name="hoender_hok_1">Hoender hok 1</string>
+    <string name="day">Day</string>
+    <string name="week">Week</string>
+    <string name="month">Month</string>
+    <string name="select_date">Select date</string>
+    <string name="door_status">  Door Status</string>
+    <string name="calendar_cd">Open calendar</string>
+    <!-- Chart titles (show IMEI in the title) -->
+    <string name="temperature_chart_title_fmt">Temperature Chart — %1$s</string>
+    <string name="open_door_history_title_fmt">Open Door History — %1$s</string>
+    <string name="battery_history_title_fmt">Battery History — %1$s</string>
+    <string name="select_time">Select time</string>
 </resources>

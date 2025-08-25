@@ -1,5 +1,6 @@
-package com.iie.st10089153.txdevsystems_app.ui.login
+package com.iie.st10089153.txdevsystems_app.network.Api
 
+import com.iie.st10089153.txdevsystems_app.ui.login.LoginResponse
 import retrofit2.Call
 import retrofit2.http.*
 

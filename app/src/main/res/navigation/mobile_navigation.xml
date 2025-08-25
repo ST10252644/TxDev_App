@@ -3,31 +3,38 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@id/navigation_home">
 
-    <activity
-        android:id="@+id/loginFragment"
-        android:name="com.iie.st10089153.txdevsystems_app.ui.login.LoginActivity"
-        android:label="Login" >
-
-    </activity>
-
-
+    <!-- HOME NAV -->
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.iie.st10089153.txdevsystems_app.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home_to_dashboard"
+            app:destination="@id/navigation_dashboard" />
+    </fragment>
 
+    <!-- DASHBOARD NAV -->
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="com.iie.st10089153.txdevsystems_app.ui.dashboard.DashboardFragment"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <!-- PROFILE NAV -->
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.iie.st10089153.txdevsystems_app.ui.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
 
+    <!-- NOTIFICATIONS NAV -->
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.iie.st10089153.txdevsystems_app.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
 </navigation>
