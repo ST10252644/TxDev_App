@@ -13,9 +13,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.iie.st10089153.txdevsystems_app.R
 import kotlinx.coroutines.flow.collectLatest
@@ -23,19 +24,18 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class TempChartFragment : Fragment() {
+
     private val vm: TempChartViewModel by viewModels()
     private lateinit var chart: LineChart
     private lateinit var datePill: TextView
     private lateinit var title: TextView
     private lateinit var rangeLabel: TextView
 
-    private fun readImeiArg(): String? =
-        arguments?.getString("IMEI")
-            ?: arguments?.getString("imei")
-            ?: arguments?.getString("device_imei")
-            ?: arguments?.getString("selectedImei")
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         val v = inflater.inflate(R.layout.fragment_chart_temperature, container, false)
         chart = v.findViewById(R.id.lineChartTemp)
         datePill = v.findViewById(R.id.btnSelectDateTemp)
@@ -46,7 +46,12 @@ class TempChartFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val imei = readImeiArg() ?: "869688057596399"
+        val imei = resolveImeiFlexible()
+        if (imei.isNullOrBlank()) {
+            Toast.makeText(requireContext(), "Device IMEI not provided", Toast.LENGTH_LONG).show()
+            title.text = getString(R.string.temperature_chart_title_fmt, "Unknown Device")
+            return
+        }
         title.text = getString(R.string.temperature_chart_title_fmt, imei)
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -96,13 +101,18 @@ class TempChartFragment : Fragment() {
             ds(nowE, "Actual Temp", purple)
         )
 
-        chart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+        // Safe formatter (works across MPAndroidChart versions)
+        chart.xAxis.valueFormatter = object : ValueFormatter() {
+            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+                val i = value.toInt()
+                return if (i in labels.indices) labels[i] else ""
+            }
+        }
         chart.xAxis.labelCount = labels.size.coerceAtMost(8)
 
         val white = ContextCompat.getColor(requireContext(), R.color.white)
         chart.xAxis.textColor = white
         chart.axisLeft.textColor = white
-
         chart.invalidate()
     }
 }

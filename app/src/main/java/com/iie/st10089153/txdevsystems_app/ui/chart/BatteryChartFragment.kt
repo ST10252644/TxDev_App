@@ -14,9 +14,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -26,20 +27,13 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class BatteryChartFragment : Fragment() {
+
     private val vm: BatteryChartViewModel by viewModels()
     private lateinit var chart: LineChart
     private lateinit var datePill: TextView
     private lateinit var title: TextView
     private lateinit var toggle: MaterialButtonToggleGroup
     private lateinit var rangeLabel: TextView
-
-    private fun argImeiOrFallback(): String {
-        val raw = arguments?.getString("IMEI")
-            ?: arguments?.getString("imei")
-            ?: arguments?.getString("device_imei")
-            ?: arguments?.getString("selectedImei")
-        return raw?.trim().takeUnless { it.isNullOrBlank() } ?: "869688057596399"
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = inflater.inflate(R.layout.fragment_chart_battery, container, false)
@@ -53,7 +47,12 @@ class BatteryChartFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val imei = argImeiOrFallback()
+        val imei = resolveImeiFlexible()
+        if (imei.isNullOrBlank()) {
+            Toast.makeText(requireContext(), "Device IMEI not provided", Toast.LENGTH_LONG).show()
+            title.text = getString(R.string.battery_history_title_fmt, "Unknown Device")
+            return
+        }
         title.text = getString(R.string.battery_history_title_fmt, imei)
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -63,7 +62,7 @@ class BatteryChartFragment : Fragment() {
                     if (ui.points.isNotEmpty()) bindChart(ui.points)
                     datePill.text = ui.day.toString()
                     if (ui.window == RangeWindow.CUSTOM && ui.startIso != null && ui.stopIso != null) {
-                        rangeLabel.text = "${prettyIsoDate(ui.startIso)}  →  ${prettyIsoDate(ui.stopIso)}"
+                        rangeLabel.text = "${prettyIsoDate(ui.startIso)} → ${prettyIsoDate(ui.stopIso)}"
                     } else if (rangeLabel.text.isNullOrBlank()) {
                         rangeLabel.text = "—"
                     }
@@ -72,6 +71,7 @@ class BatteryChartFragment : Fragment() {
             }
         }
 
+        // Initial load
         vm.fetch(requireContext(), imei, LocalDate.now(), RangeWindow.MONTH)
         toggle.check(R.id.btnMonth)
         styleToggle()
@@ -94,9 +94,9 @@ class BatteryChartFragment : Fragment() {
                 .build()
             picker.addOnPositiveButtonClickListener { sel ->
                 val start = isoStartOfDay(sel.first!!)
-                val stop  = isoEndOfDay(sel.second!!)
+                val stop = isoEndOfDay(sel.second!!)
                 vm.fetchRange(requireContext(), imei, start, stop)
-                rangeLabel.text = "${prettyIsoDate(start)}  →  ${prettyIsoDate(stop)}"
+                rangeLabel.text = "${prettyIsoDate(start)} → ${prettyIsoDate(stop)}"
                 toggle.clearChecked()
                 styleToggle()
             }
@@ -110,20 +110,25 @@ class BatteryChartFragment : Fragment() {
         val supply = points.mapIndexed { i, p -> Entry(i.toFloat(), p.supply_volt.toFloatOrNaN()) }
 
         val purple = ContextCompat.getColor(requireContext(), R.color.battery_purple)
-        val green  = ContextCompat.getColor(requireContext(), R.color.supply_green)
+        val green = ContextCompat.getColor(requireContext(), R.color.supply_green)
 
         chart.data = LineData(
-            ds(bat,   "Battery Volt (V)", purple),
-            ds(supply,"Supply Volt (V)",  green)
+            ds(bat, "Battery Volt (V)", purple),
+            ds(supply, "Supply Volt (V)", green)
         )
 
-        chart.xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+        // Safe ValueFormatter for x-axis
+        chart.xAxis.valueFormatter = object : ValueFormatter() {
+            override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+                val i = value.toInt()
+                return if (i in labels.indices) labels[i] else ""
+            }
+        }
         chart.xAxis.labelCount = labels.size.coerceAtMost(8)
 
         val white = ContextCompat.getColor(requireContext(), R.color.white)
         chart.xAxis.textColor = white
         chart.axisLeft.textColor = white
-
         chart.invalidate()
     }
 

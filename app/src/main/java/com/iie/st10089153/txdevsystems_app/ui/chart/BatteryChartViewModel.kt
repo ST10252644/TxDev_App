@@ -1,49 +1,51 @@
 package com.iie.st10089153.txdevsystems_app.ui.chart
 
-
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iie.st10089153.txdevsystems_app.network.Api.RangePoint
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-data class BatteryUi(
-    val loading: Boolean = false,
-    val error: String? = null,
-    val points: List<RangePoint> = emptyList(),
+data class ChartUi(
     val day: LocalDate = LocalDate.now(),
     val window: RangeWindow = RangeWindow.MONTH,
+    val points: List<RangePoint> = emptyList(),
     val startIso: String? = null,
-    val stopIso: String? = null
+    val stopIso: String? = null,
+    val error: String? = null
 )
 
-class BatteryChartViewModel(private val repo: ChartsRepository = ChartsRepository()) : ViewModel() {
-    private val _ui = MutableStateFlow(BatteryUi())
-    val ui: StateFlow<BatteryUi> = _ui
+class BatteryChartViewModel : ViewModel() {
+    private val _ui = MutableStateFlow(ChartUi())
+    val ui = _ui.asStateFlow()
 
-    fun fetch(context: Context, imei: String, day: LocalDate, window: RangeWindow) {
-        _ui.value = _ui.value.copy(loading = true, error = null, day = day, window = window, startIso = null, stopIso = null)
+    fun fetch(ctx: Context, imei: String, day: LocalDate, window: RangeWindow) {
         viewModelScope.launch {
             try {
-                val data = repo.load(context, imei, day, window)
-                _ui.value = _ui.value.copy(loading = false, points = data)
-            } catch (e: Exception) {
-                _ui.value = _ui.value.copy(loading = false, error = e.message, points = emptyList())
+                val pts = ChartsRepository.load(ctx, imei, day, window)
+                _ui.value = ChartUi(day = day, window = window, points = pts)
+            } catch (t: Throwable) {
+                _ui.value = _ui.value.copy(error = t.message ?: "Unknown error")
             }
         }
     }
 
-    fun fetchRange(context: Context, imei: String, startIso: String, stopIso: String) {
-        _ui.value = _ui.value.copy(loading = true, error = null, window = RangeWindow.CUSTOM, startIso = startIso, stopIso = stopIso)
+    fun fetchRange(ctx: Context, imei: String, startIso: String, stopIso: String) {
         viewModelScope.launch {
             try {
-                val data = repo.loadExplicit(context, imei, startIso, stopIso)
-                _ui.value = _ui.value.copy(loading = false, points = data)
-            } catch (e: Exception) {
-                _ui.value = _ui.value.copy(loading = false, error = e.message, points = emptyList())
+                val pts = ChartsRepository.loadExplicit(ctx, imei, startIso, stopIso)
+                _ui.value = ChartUi(
+                    day = _ui.value.day,
+                    window = RangeWindow.CUSTOM,
+                    points = pts,
+                    startIso = startIso,
+                    stopIso = stopIso
+                )
+            } catch (t: Throwable) {
+                _ui.value = _ui.value.copy(error = t.message ?: "Unknown error")
             }
         }
     }

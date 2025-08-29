@@ -16,45 +16,60 @@
             app:destination="@id/navigation_dashboard" />
     </fragment>
 
-    <!-- DASHBOARD NAV -->
+    <!-- DASHBOARD NAV (expects IMEI) -->
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.iie.st10089153.txdevsystems_app.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_dashboard">
+        <argument
+            android:name="IMEI"
+            app:argType="string" />
+    </fragment>
 
-    <!-- PROFILE NAV -->
-    <fragment
-        android:id="@+id/navigation_profile"
-        android:name="com.iie.st10089153.txdevsystems_app.ui.profile.ProfileFragment"
-        android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
-
-    <!-- NOTIFICATIONS NAV -->
+    <!-- NOTIFICATIONS -->
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.iie.st10089153.txdevsystems_app.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 
+    <!-- PROFILE -->
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.iie.st10089153.txdevsystems_app.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <!-- CHARTS (all require IMEI) -->
     <fragment
         android:id="@+id/navigation_temperature_chart"
         android:name="com.iie.st10089153.txdevsystems_app.ui.chart.TempChartFragment"
         android:label="Temperature Chart"
-        tools:layout="@layout/fragment_chart_temperature" />
+        tools:layout="@layout/fragment_chart_temperature">
+        <argument
+            android:name="IMEI"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_door_history_chart"
         android:name="com.iie.st10089153.txdevsystems_app.ui.chart.DoorChartFragment"
         android:label="Open Door History Chart"
-        tools:layout="@layout/fragment_chart_open_door" />
+        tools:layout="@layout/fragment_chart_open_door">
+        <argument
+            android:name="IMEI"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_battery_chart"
         android:name="com.iie.st10089153.txdevsystems_app.ui.chart.BatteryChartFragment"
         android:label="Battery Chart"
-        tools:layout="@layout/fragment_chart_battery" />
-
-
+        tools:layout="@layout/fragment_chart_battery">
+        <argument
+            android:name="IMEI"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

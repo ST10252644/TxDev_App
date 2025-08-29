@@ -16,6 +16,8 @@
     <color name="green_success">#B8ED55</color> <!-- example green -->
     <color name="red_error">#EE0202</color>     <!-- example red -->
 
+    <color name="calendar_blue">#55BFED</color>
+
     <color name="tx_green">#B8ED55</color>
 
     <!-- Temperature -->

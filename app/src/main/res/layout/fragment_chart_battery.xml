@@ -171,14 +171,7 @@
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Chart -->
-                    <com.github.mikephil.charting.charts.LineChart
-                        android:id="@+id/lineChartBattery"
-                        android:layout_width="match_parent"
-                        android:layout_height="280dp"
-                        android:layout_marginBottom="6dp"/>
-
-                    <!-- NEW: Chosen date range label -->
+                    <!-- Range label ABOVE chart -->
                     <TextView
                         android:id="@+id/tvRangeLabel"
                         android:layout_width="match_parent"
@@ -187,16 +180,24 @@
                         android:textColor="@color/white"
                         android:textStyle="bold"
                         android:gravity="center"
-                        android:paddingTop="6dp"
-                        android:layout_marginBottom="8dp"/>
+                        android:paddingBottom="6dp"
+                        android:layout_marginBottom="2dp"/>
 
-                    <!-- Legend (Battery & Supply) -->
+                    <!-- Chart -->
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/lineChartBattery"
+                        android:layout_width="match_parent"
+                        android:layout_height="280dp"
+                        android:layout_marginBottom="6dp"/>
+
+                    <!-- Legend (extra top margin added) -->
                     <LinearLayout
                         android:id="@+id/legendBattery"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="16dp">
 
                         <TextView
                             android:layout_width="wrap_content"
