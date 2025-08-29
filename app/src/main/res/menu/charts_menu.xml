@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_temperature_chart" android:title="Temperature Chart"/>
+    <item android:id="@+id/action_door_chart" android:title="Open Door History Chart"/>
+    <item android:id="@+id/action_battery_chart" android:title="Battery Chart"/>
+</menu>
