@@ -5,5 +5,8 @@ data class GaugeCard(
     val statusText: String,
     val name: String,
     val measurement: String? = null,
-    val gaugeImageRes: Int
+    val gaugeImageRes: Int,
+    val minValue: Float? = null,
+    val maxValue: Float? = null
+
 )

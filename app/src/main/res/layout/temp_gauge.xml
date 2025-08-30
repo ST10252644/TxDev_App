@@ -18,6 +18,8 @@
         app:sv_unit="°C"
         app:sv_unitTextSize="14sp"
         app:sv_withTremble="false"
+        app:sv_startDegree="135"
+        app:sv_endDegree="405"
         app:sv_centerCircleColor="@android:color/transparent"
         app:sv_backgroundCircleColor="@android:color/transparent"/>
 

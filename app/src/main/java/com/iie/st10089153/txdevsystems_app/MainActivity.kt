@@ -1,8 +1,9 @@
-
 package com.iie.st10089153.txdevsystems_app
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -50,6 +51,92 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
 
+        // 🔹 Handle toolbar visibility & actions based on destination
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
+            when (destination.id) {
+                R.id.navigation_home -> {
+                    binding.topNav.visibility = View.GONE
+                }
+                R.id.navigation_notifications -> {
+                    binding.topNav.visibility = View.VISIBLE
+                    binding.topNavBackButton.visibility = View.VISIBLE
+                    binding.topNavTitle.text = "Settings"
+                    binding.topNavRightButton.visibility = View.GONE
+                }
+                R.id.navigation_profile -> {
+                    binding.topNav.visibility = View.VISIBLE
+                    binding.topNavBackButton.visibility = View.VISIBLE
+                    binding.topNavTitle.text = "Edit Profile"
+                    binding.topNavRightButton.visibility = View.GONE
+                }
+                R.id.navigation_dashboard -> {
+                    binding.topNav.visibility = View.VISIBLE
+                    binding.topNavBackButton.visibility = View.VISIBLE
+                    binding.topNavTitle.text = "Dashboard"
+                    binding.topNavRightButton.visibility = View.VISIBLE
+                    binding.topNavRightButton.setImageResource(R.drawable.ic_settings)
+
+                    // 🔹 Show popup menu when clicking the settings icon
+                    binding.topNavRightButton.setOnClickListener { view ->
+                        val popup = PopupMenu(this, view)
+                        popup.menuInflater.inflate(R.menu.dashboard_settings_menu, popup.menu)
+
+                        popup.setOnMenuItemClickListener { item ->
+                            when (item.itemId) {
+                                R.id.action_device_settings -> {
+                                    //navController.navigate(R.id.navigation_device_settings)
+                                    true
+                                }
+                                R.id.action_view_charts -> {
+                                    // Show second popup for charts
+                                    val chartsPopup = PopupMenu(this, view)
+                                    chartsPopup.menuInflater.inflate(R.menu.charts_menu, chartsPopup.menu)
+                                    chartsPopup.setOnMenuItemClickListener { chartItem ->
+                                        when (chartItem.itemId) {
+                                            R.id.action_temperature_chart -> {
+                                                navController.navigate(R.id.navigation_temperature_chart)
+                                                true
+                                            }
+                                            R.id.action_door_chart -> {
+                                                navController.navigate(R.id.navigation_door_history_chart)
+                                                true
+                                            }
+                                            R.id.action_battery_chart -> {
+                                                navController.navigate(R.id.navigation_battery_chart)
+                                                true
+                                            }
+                                            else -> false
+                                        }
+                                    }
+                                    chartsPopup.show()
+                                    true
+                                }
+                                R.id.action_view_reports -> {
+                                    //navController.navigate(R.id.navigation_reports)
+                                    true
+                                }
+                                else -> false
+                            }
+                        }
+                        popup.show()
+                    }
+                }
+
+
+                else -> {
+                    binding.topNav.visibility = View.VISIBLE
+                    binding.topNavBackButton.visibility = View.GONE
+                    binding.topNavTitle.text = "App"
+                    binding.topNavRightButton.visibility = View.GONE
+                }
+            }
+        }
+
+        // 🔹 Back button action
+        binding.topNavBackButton.setOnClickListener {
+            navController.navigateUp()
+        }
+
         // Optional: navigate to home if intent says so
         if (intent.getBooleanExtra("navigateToHome", false)) {
             navController.navigate(R.id.navigation_home)
@@ -61,4 +148,3 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
 }
-

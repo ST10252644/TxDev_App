@@ -6,11 +6,10 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.iie.st10089153.txdevsystems_app.R
 import com.iie.st10089153.txdevsystems_app.ui.dashboard.models.GaugeCard
-
+import com.github.anastr.speedviewlib.SpeedView
 
 class GaugeAdapter(private val items: List<GaugeCard>) :
     RecyclerView.Adapter<GaugeAdapter.GaugeViewHolder>() {
@@ -35,15 +34,41 @@ class GaugeAdapter(private val items: List<GaugeCard>) :
         holder.iconView.setImageResource(item.iconRes)
         holder.statusText.text = item.statusText
         holder.nameText.text = item.name
+        holder.measurementText.visibility = item.measurement?.let {
+            holder.measurementText.text = it
+            View.VISIBLE
+        } ?: View.INVISIBLE
 
-        if (item.measurement.isNullOrEmpty()) {
-            holder.measurementText.visibility = View.INVISIBLE // hides “Volts” if not needed
+        holder.gaugeContainer.removeAllViews()
+
+        // If minValue and maxValue exist, show SpeedView gauge
+        if (item.minValue != null && item.maxValue != null) {
+            val gaugeView = LayoutInflater.from(holder.view.context)
+                .inflate(R.layout.temp_gauge, holder.gaugeContainer, false)
+            holder.gaugeContainer.addView(gaugeView)
+
+            val speedGauge = gaugeView.findViewById<SpeedView>(R.id.tempGauge)
+            speedGauge.speedometerWidth = 25f
+            speedGauge.withTremble = false
+            speedGauge.minSpeed = item.minValue
+            speedGauge.maxSpeed = item.maxValue
+            speedGauge.setStartDegree(135)
+            speedGauge.setEndDegree(405)
+
+            val currentVal = item.statusText?.toFloatOrNull() ?: item.minValue
+            speedGauge.speedTo(currentVal, 1000)
         } else {
-            holder.measurementText.text = item.measurement
+            // No gauge, just show image
+            val imageView = ImageView(holder.view.context).apply {
+                setImageResource(item.gaugeImageRes)
+                layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                )
+                scaleType = ImageView.ScaleType.CENTER_INSIDE
+            }
+            holder.gaugeContainer.addView(imageView)
         }
-
-        holder.gaugeContainer.background =
-            ContextCompat.getDrawable(holder.view.context, item.gaugeImageRes)
     }
 
     override fun getItemCount(): Int = items.size

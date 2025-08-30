@@ -23,16 +23,16 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/top_nav"
         android:layout_width="0dp"
-        android:layout_height="75dp"
-        android:background="@color/white"
+        android:layout_height="130dp"
+        android:background="@color/black_background"
         android:elevation="4dp"
         android:fitsSystemWindows="true"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         app:contentInsetStartWithNavigation="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:titleTextAppearance="@style/ToolbarTitle">
 
         <RelativeLayout
@@ -47,18 +47,19 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/back"
                 android:src="@drawable/ic_back"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                app:tint="@color/white" />
 
             <TextView
                 android:id="@+id/topNavTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
+                android:fontFamily="@font/poppinslight"
                 android:text="Title"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="14sp"
-                android:textStyle="bold"
-                android:fontFamily="@font/poppinslight"/>
+                android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/topNavRightButton"
@@ -67,7 +68,8 @@
                 android:layout_alignParentEnd="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_settings"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                app:tint="@color/white" />
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 

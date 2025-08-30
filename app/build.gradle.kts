@@ -29,6 +29,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -53,10 +54,20 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
 
+
+
     //Login API Authentication & access token
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+
+    //Gauge implementation
+    implementation("com.github.anastr:speedviewlib:1.6.1")
+
+    //////
+    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.0.4")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation ("com.google.android.material:material:1.12.0")
 
 
 }

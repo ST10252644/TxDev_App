@@ -2,27 +2,27 @@ package com.iie.st10089153.txdevsystems_app.ui.dashboard
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TableRow
-import android.widget.TextView
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.iie.st10089153.txdevsystems_app.R
-import com.iie.st10089153.txdevsystems_app.ui.dashboard.GaugeAdapter
-import com.iie.st10089153.txdevsystems_app.ui.dashboard.models.GaugeCard
 import com.iie.st10089153.txdevsystems_app.databinding.FragmentDashboardBinding
 import com.iie.st10089153.txdevsystems_app.network.Api.CurrentRequest
 import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
-
+import com.iie.st10089153.txdevsystems_app.ui.dashboard.models.GaugeCard
 import kotlinx.coroutines.launch
 
 class DashboardFragment : Fragment() {
-
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
+    private var currentImei: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,18 +31,18 @@ class DashboardFragment : Fragment() {
         Log.d("DashboardFragment", "onCreateView called")
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
 
-        // receive IMEI
-        view?.let { super.onViewCreated(it, savedInstanceState) }
-        val imei = arguments?.getString("IMEI")
-        Log.d("DashboardFragment", "Received IMEI: $imei")
+        // 1) Receive IMEI from Home
+        currentImei = arguments?.getString("IMEI")
+        Log.d("DashboardFragment", "Received IMEI: $currentImei")
 
-        // Set empty adapter to avoid "No adapter attached" warning
+        // 2) Make IMEI available to all next destinations in this back stack
+        findNavController().currentBackStackEntry?.savedStateHandle?.set("IMEI", currentImei)
+
         binding.gaugeRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.gaugeRecyclerView.adapter = GaugeAdapter(emptyList())
 
-        // Call Dashboard API
-        if (!imei.isNullOrEmpty()) {
-            loadDashboardItem(imei)
+        if (!currentImei.isNullOrEmpty()) {
+            loadDashboardItem(currentImei!!)
         } else {
             Log.e("DashboardFragment", "IMEI not provided!")
         }
@@ -50,100 +50,109 @@ class DashboardFragment : Fragment() {
         return binding.root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.dashboard_settings_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_device_settings -> {
+                // Handle device settings
+                true
+            }
+            R.id.action_view_charts -> {
+                showChartsMenu()
+                true
+            }
+            R.id.action_view_reports -> {
+                // Handle reports
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun showChartsMenu() {
+        val anchor = requireView() // or use a toolbar view if you have one
+        val popup = androidx.appcompat.widget.PopupMenu(requireContext(), anchor)
+        popup.menuInflater.inflate(R.menu.charts_menu, popup.menu)
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_temperature_chart -> { navigateToChart(R.id.navigation_temperature_chart); true }
+                R.id.action_door_chart        -> { navigateToChart(R.id.navigation_door_history_chart); true }
+                R.id.action_battery_chart     -> { navigateToChart(R.id.navigation_battery_chart); true }
+                else -> false
+            }
+        }
+        popup.show()
+    }
+
+    private fun navigateToChart(chartDestination: Int) {
+        val imei = currentImei
+        if (imei.isNullOrBlank()) {
+            Log.e("DashboardFragment", "Cannot navigate to chart: IMEI is null")
+            return
+        }
+        val bundle = Bundle().apply {
+            // Provide all common keys so any reader will find it
+            putString("IMEI", imei)
+            putString("imei", imei)
+            putString("device_imei", imei)
+            putString("selectedImei", imei)
+        }
+        findNavController().navigate(chartDestination, bundle)
+    }
+
     private fun loadDashboardItem(imei: String) {
         lifecycleScope.launch {
             try {
-                val response = RetrofitClient.getDashboardApi(requireContext()).getCurrent(
-                    CurrentRequest(imei)
-                )
-
+                val response = RetrofitClient.getDashboardApi(requireContext())
+                    .getCurrent(CurrentRequest(imei))
                 if (response.isSuccessful) {
-                    val item = response.body()
-                    if (item != null) {
-                        // Map response to your gauges
-                        val gaugeList = listOf(
-                            GaugeCard(
-                                iconRes = R.drawable.ic_power,
-                                statusText = if (item.supply_status == "Okay") "ON" else "OFF",
-                                name = "Power",
-                                gaugeImageRes = R.drawable.circle_placeholder
-                            ),
-                            GaugeCard(
-                                iconRes = R.drawable.ic_battery_full,
-                                statusText = item.bat_volt.toString(),
-                                name = "Battery",
-                                measurement = "Volts",
-                                gaugeImageRes = R.drawable.circle_placeholder
-                            ),
-                            GaugeCard(
-                                iconRes = R.drawable.ic_temperature,
-                                statusText = "${item.temp_now}°C",
-                                name = "Temperature",
-                                measurement = "Celsius",
-                                gaugeImageRes = R.drawable.circle_placeholder
-                            ),
-                            GaugeCard(
-                                iconRes = R.drawable.ic_door_close,
-                                statusText = item.door_status,
-                                name = "Door",
-                                gaugeImageRes = R.drawable.circle_placeholder
-                            )
+                    val item = response.body() ?: return@launch
+                    val gaugeList = listOf(
+                        GaugeCard(
+                            iconRes = R.drawable.ic_power,
+                            statusText = if (item.supply_status == "Okay") "ON" else "OFF",
+                            name = "Power",
+                            gaugeImageRes = if (item.supply_status == "Okay")
+                                R.drawable.power_on else R.drawable.circle_placeholder
+                        ),
+                        GaugeCard(
+                            iconRes = R.drawable.ic_battery_full,
+                            statusText = item.bat_volt.toString(),
+                            name = "Battery",
+                            measurement = "Volts",
+                            minValue = 0f,
+                            maxValue = 15f,
+                            gaugeImageRes = R.drawable.circle_placeholder
+                        ),
+                        GaugeCard(
+                            iconRes = R.drawable.ic_temperature,
+                            statusText = "${item.temp_now}",
+                            name = "Temperature",
+                            measurement = "°C",
+                            gaugeImageRes = R.drawable.circle_placeholder,
+                            minValue = item.temp_min.toFloat(),
+                            maxValue = item.temp_max.toFloat()
+                        ),
+                        GaugeCard(
+                            iconRes = R.drawable.ic_door_close,
+                            statusText = item.door_status,
+                            name = "Door",
+                            gaugeImageRes = if (item.door_status_bool == 0)
+                                R.drawable.door_closed else R.drawable.circle_placeholder
                         )
-
-                        binding.gaugeRecyclerView.layoutManager =
-                            GridLayoutManager(requireContext(), 2)
-
-                        binding.gaugeRecyclerView.adapter = GaugeAdapter(gaugeList)
-
-
-                        //  Populate the table at the bottom
-                        populateDashboardTable(item)
-
-                    }
+                    )
+                    binding.gaugeRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
+                    binding.gaugeRecyclerView.adapter = GaugeAdapter(gaugeList)
                 } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("DashboardAPI", "Error: ${response.code()} - $errorBody")
+                    Log.e("DashboardAPI", "Error: ${response.code()} - ${response.errorBody()?.string()}")
                 }
             } catch (e: Exception) {
                 Log.e("DashboardAPI", "Exception occurred: ${e.localizedMessage}", e)
             }
-        }
-    }
-
-    private fun populateDashboardTable(item: com.iie.st10089153.txdevsystems_app.ui.dashboard.models.DashboardItem) {
-        binding.dashboardTable.removeAllViews() // clear previous rows
-
-        fun addRow(label: String, value: String) {
-            val tableRow = TableRow(requireContext())
-            val tvLabel = TextView(requireContext()).apply {
-                text = label
-                setPadding(8, 8, 8, 8)
-            }
-            val tvValue = TextView(requireContext()).apply {
-                text = value
-                setPadding(8, 8, 8, 8)
-            }
-            tableRow.addView(tvLabel)
-            tableRow.addView(tvValue)
-            binding.dashboardTable.addView(tableRow)
-        }
-
-        // Add all fields
-        item.run {
-            addRow("ID", id.toString())
-            addRow("IMEI", imei)
-            addRow("Temp Max", temp_max.toString())
-            addRow("Temp Now", temp_now.toString())
-            addRow("Temp Min", temp_min.toString())
-            addRow("Supply Volt", supply_volt.toString())
-            addRow("Battery Volt", bat_volt.toString())
-            addRow("Supply Status", supply_status)
-            addRow("Battery Status", bat_status)
-            addRow("Door Status", door_status)
-            addRow("Door Status Bool", door_status_bool.toString())
-            addRow("Signal Strength", signal_strength)
-            addRow("Timestamp", timestamp)
-            addRow("Active", active.toString())
         }
     }
 
