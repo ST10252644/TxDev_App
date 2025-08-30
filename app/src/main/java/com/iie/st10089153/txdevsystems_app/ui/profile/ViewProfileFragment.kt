@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.iie.st10089153.txdevsystems_app.R
 import com.iie.st10089153.txdevsystems_app.databinding.FragmentViewProfileBinding
+import com.iie.st10089153.txdevsystems_app.network.Api.AccountResponse
+import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
+import retrofit2.Call
 
 class ViewProfileFragment : Fragment() {
 
@@ -26,8 +29,9 @@ class ViewProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupClickListeners()
-        populateStaticData()
+        fetchUserProfile() // <-- fetch from API
     }
+
 
     private fun setupClickListeners() {
         // Back button - navigate back or close fragment
@@ -56,19 +60,38 @@ class ViewProfileFragment : Fragment() {
             .commit()
     }
 
-    private fun populateStaticData() {
-        // Static profile data for UI testing
-        binding.apply {
-            tvUsername.text = "Cherika.User"
-            tvFirstName.text = "Cherika"
-            tvLastName.text = "Bodde"
-            tvCellNumber.text = "082 000 0000"
-            tvEmail.text = "cherika.bodde@co.za"
-            tvPhoneNumber.text = "011 000 0000"
-            tvAddress.text = "Pam Straat 617"
-            tvAccountCreated.text = "2025-06-25 15:55:29"
-        }
+    private fun fetchUserProfile() {
+        val api = RetrofitClient.getAccountApi(requireContext())
+
+        api.getAccount().enqueue(object : retrofit2.Callback<AccountResponse> {
+            override fun onResponse(
+                call: Call<AccountResponse>,
+                response: retrofit2.Response<AccountResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val account = response.body()!!
+                    binding.apply {
+                        tvUsername.text = account.username
+                        tvFirstName.text = account.first_name
+                        tvLastName.text = account.last_name
+                        tvCellNumber.text = account.cell
+                        tvEmail.text = account.email
+                        tvPhoneNumber.text = account.office_nr ?: "N/A"
+                        tvAddress.text = account.address ?: "N/A"
+                        tvAccountCreated.text = account.timestamp
+                    }
+                } else {
+                    // show error
+                    //tvUsername.text = "Failed to load profile"
+                }
+            }
+
+            override fun onFailure(call: Call<AccountResponse>, t: Throwable) {
+                //tvUsername.text = "Error: ${t.localizedMessage}"
+            }
+        })
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
