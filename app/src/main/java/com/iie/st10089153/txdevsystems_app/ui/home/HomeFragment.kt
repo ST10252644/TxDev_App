@@ -36,7 +36,7 @@ class HomeFragment : Fragment() {
 
         // Call API
         val api = RetrofitClient.getAvailableUnitsApi(requireContext())
-        val call = api.getAvailableUnits(AvailableUnitsRequest(status = "Active"))
+        val call = api.getAvailableUnits(AvailableUnitsRequest(status = "All"))
 
         call.enqueue(object : Callback<List<AvailableUnit>> {
             override fun onResponse(
