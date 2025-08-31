@@ -10,7 +10,6 @@
     <string name="status_offline">Offline</string>
     <string name="last_refreshed_format">Last refreshed: %s</string>
 
-
     <string name="hoender_hok_1">Hoender hok 1</string>
     <string name="day">Day</string>
     <string name="week">Week</string>
@@ -25,9 +24,7 @@
 
     <string name="select_time">Select time</string>
 
-
     <string name="temperature_chart">Temperature Chart</string>
     <string name="battery_history_chart">Battery History Chart</string>
     <string name="door_history_chart">Door History Chart</string>
-
 </resources>

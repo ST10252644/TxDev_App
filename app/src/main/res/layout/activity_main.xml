@@ -23,7 +23,7 @@
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/top_nav"
         android:layout_width="0dp"
-        android:layout_height="130dp"
+        android:layout_height="100dp"
         android:background="@color/black_background"
         android:elevation="4dp"
         android:fitsSystemWindows="true"

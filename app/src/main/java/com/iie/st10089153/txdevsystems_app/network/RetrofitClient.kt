@@ -4,6 +4,7 @@ import android.content.Context
 import com.iie.st10089153.txdevsystems_app.network.Api.AuthApi
 import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnitsApi
 import com.iie.st10089153.txdevsystems_app.network.Api.DashboardApi
+import com.iie.st10089153.txdevsystems_app.network.Api.NotificationsApi
 import com.iie.st10089153.txdevsystems_app.network.Api.RangeApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -51,6 +52,9 @@ object RetrofitClient {
 
     fun getRangeApi(context: Context): RangeApi =
         getInstance(context).create(RangeApi::class.java)
+
+    fun getNotificationsApi(context: Context): NotificationsApi =
+        getInstance(context).create(NotificationsApi::class.java)
 
 
 

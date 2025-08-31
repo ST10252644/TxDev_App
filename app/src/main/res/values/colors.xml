@@ -10,7 +10,8 @@
     <color name="black_background">#121212</color>
     <color name="primary">#B8ED55</color>
     <color name="secondary">#121212</color>
-    <color name="tertiary">#1E1E1E</color>
+    <color name="tertiary">#2c2c2c</color>
+    <color name="tertiary_old">#1d1d1d</color>
     <color name="text">#ffffff</color>
     <color name="uneditable">#9E9E9E</color>
     <color name="green_success">#B8ED55</color> <!-- example green -->
