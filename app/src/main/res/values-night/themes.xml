@@ -1,3 +1,4 @@
+<!-- values/themes/(night) -->
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Theme.TxDevSystems_App.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">

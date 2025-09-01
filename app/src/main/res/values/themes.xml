@@ -1,4 +1,4 @@
-<!-- Method 1: Update your themes.xml (themes/themes.xml) -->
+<!-- values/themes -->
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Theme.TxDevSystems_App.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">

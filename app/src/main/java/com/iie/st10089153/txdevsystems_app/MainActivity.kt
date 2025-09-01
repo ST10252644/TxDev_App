@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                         popup.setOnMenuItemClickListener { item ->
                             when (item.itemId) {
                                 R.id.action_device_settings -> {
-                                    //navController.navigate(R.id.navigation_device_settings)
+                                    navController.navigate(R.id.navigation_device_settings)
                                     true
                                 }
                                 R.id.action_view_charts -> {

@@ -7,6 +7,6 @@ data class GaugeCard(
     val measurement: String? = null,
     val gaugeImageRes: Int,
     val minValue: Float? = null,
-    val maxValue: Float? = null
-
+    val maxValue: Float? = null,
+    val type: String = "" // Added type: "temperature", "battery", or "" for normal
 )

@@ -1,5 +1,6 @@
 package com.iie.st10089153.txdevsystems_app.ui.dashboard
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.iie.st10089153.txdevsystems_app.R
 import com.iie.st10089153.txdevsystems_app.ui.dashboard.models.GaugeCard
-import com.github.anastr.speedviewlib.SpeedView
+import com.iie.st10089153.txdevsystems_app.ui.dashboard.views.BatteryGaugeView
+import com.iie.st10089153.txdevsystems_app.ui.dashboard.views.GaugeBackgroundView
 
 class GaugeAdapter(private val items: List<GaugeCard>) :
     RecyclerView.Adapter<GaugeAdapter.GaugeViewHolder>() {
@@ -28,37 +30,46 @@ class GaugeAdapter(private val items: List<GaugeCard>) :
         return GaugeViewHolder(view)
     }
 
+    @SuppressLint("MissingInflatedId")
     override fun onBindViewHolder(holder: GaugeViewHolder, position: Int) {
         val item = items[position]
 
+        // Set texts and icon
         holder.iconView.setImageResource(item.iconRes)
         holder.statusText.text = item.statusText
         holder.nameText.text = item.name
-        holder.measurementText.visibility = item.measurement?.let {
-            holder.measurementText.text = it
-            View.VISIBLE
-        } ?: View.INVISIBLE
 
+        // Clear any previous views in the container
         holder.gaugeContainer.removeAllViews()
 
-        // If minValue and maxValue exist, show SpeedView gauge
         if (item.minValue != null && item.maxValue != null) {
-            val gaugeView = LayoutInflater.from(holder.view.context)
-                .inflate(R.layout.temp_gauge, holder.gaugeContainer, false)
+            // Decide which gauge type to inflate
+            val gaugeView = if (item.type == "battery") {
+                LayoutInflater.from(holder.view.context)
+                    .inflate(R.layout.battery_gauge, holder.gaugeContainer, false)
+            } else {
+                LayoutInflater.from(holder.view.context)
+                    .inflate(R.layout.temp_gauge, holder.gaugeContainer, false)
+            }
+
             holder.gaugeContainer.addView(gaugeView)
 
-            val speedGauge = gaugeView.findViewById<SpeedView>(R.id.tempGauge)
-            speedGauge.speedometerWidth = 25f
-            speedGauge.withTremble = false
-            speedGauge.minSpeed = item.minValue
-            speedGauge.maxSpeed = item.maxValue
-            speedGauge.setStartDegree(135)
-            speedGauge.setEndDegree(405)
+            // Animate the correct gauge
+            if (item.type == "battery") {
+                val batteryGauge = gaugeView.findViewById<BatteryGaugeView>(R.id.batteryGaugeView)
+                batteryGauge.animateToValue(item.statusText?.toFloatOrNull() ?: item.minValue.toFloat(), 1000)
+                holder.measurementText.text = "Volts"
+            } else {
+                val tempGauge = gaugeView.findViewById<GaugeBackgroundView>(R.id.gaugeBackgroundView)
+                tempGauge.updateRanges(item.minValue.toFloat(), item.maxValue.toFloat())
+                tempGauge.animateToValue(item.statusText?.toFloatOrNull() ?: item.minValue.toFloat(), 1000)
+                holder.measurementText.text = "°C"
+            }
 
-            val currentVal = item.statusText?.toFloatOrNull() ?: item.minValue
-            speedGauge.speedTo(currentVal, 1000)
+            holder.measurementText.visibility = View.VISIBLE
+
         } else {
-            // No gauge, just show image
+            // Fallback: show image if gauge not available
             val imageView = ImageView(holder.view.context).apply {
                 setImageResource(item.gaugeImageRes)
                 layoutParams = FrameLayout.LayoutParams(
@@ -68,6 +79,7 @@ class GaugeAdapter(private val items: List<GaugeCard>) :
                 scaleType = ImageView.ScaleType.CENTER_INSIDE
             }
             holder.gaugeContainer.addView(imageView)
+            holder.measurementText.visibility = View.INVISIBLE
         }
     }
 
