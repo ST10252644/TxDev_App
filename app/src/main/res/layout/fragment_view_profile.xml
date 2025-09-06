@@ -85,7 +85,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text=""
+                        android:text="Cherika.User"
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -95,6 +95,7 @@
                         android:background="#333333" />
 
                 </LinearLayout>
+
             </LinearLayout>
 
             <!-- First Name Field -->
@@ -125,7 +126,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text=""
+                        android:text="Cherika"
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -133,7 +134,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
+
                 </LinearLayout>
+
             </LinearLayout>
 
             <!-- Last Name Field -->
@@ -164,7 +167,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text=""
+                        android:text="Bodde"
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -172,7 +175,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
+
                 </LinearLayout>
+
             </LinearLayout>
 
             <!-- Cell Number Field -->
@@ -203,7 +208,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text=""
+                        android:text="082 000 0000"
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -211,7 +216,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
+
                 </LinearLayout>
+
             </LinearLayout>
 
             <!-- Email Field -->
@@ -242,7 +249,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text=""
+                        android:text="cherika.bodde@co.za"
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -250,7 +257,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
+
                 </LinearLayout>
+
             </LinearLayout>
 
             <!-- Phone Number Field -->
@@ -281,7 +290,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text=""
+                        android:text="011 000 0000"
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -289,7 +298,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
+
                 </LinearLayout>
+
             </LinearLayout>
 
             <!-- Address Field -->
@@ -320,7 +331,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text=""
+                        android:text="Pam Straat 617"
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -328,7 +339,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
+
                 </LinearLayout>
+
             </LinearLayout>
 
             <!-- Account Created Field -->
@@ -360,16 +373,20 @@
                         android:gravity="center_vertical"
                         android:textColor="#888888"
                         android:textSize="16sp"
-                        android:text=""
+                        android:text="2025-06-25 15:55:29"
                         android:paddingBottom="8dp" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
+
                 </LinearLayout>
+
             </LinearLayout>
 
         </LinearLayout>
+
     </ScrollView>
+
 </LinearLayout>

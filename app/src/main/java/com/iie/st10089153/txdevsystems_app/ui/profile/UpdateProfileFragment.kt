@@ -26,7 +26,7 @@ class UpdateProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupUI()
-
+        populateWithSampleData()
     }
 
     private fun setupUI() {
@@ -43,7 +43,17 @@ class UpdateProfileFragment : Fragment() {
         }
     }
 
-
+    private fun populateWithSampleData() {
+        // Sample data to test the UI
+        binding.etUsername.setText("Cherika.User")
+        binding.etFirstName.setText("Cherika")
+        binding.etLastName.setText("Bodde")
+        binding.etCellNumber.setText("082 000 0000")
+        binding.etEmail.setText("cherika.bodde@co.za")
+        binding.etPhoneNumber.setText("011 000 0000")
+        binding.etAddress.setText("Pam Straat 617")
+        binding.tvAccountCreated.text = "2025-06-25 15:55:29"
+    }
 
     private fun validateFields(): Boolean {
         var isValid = true
