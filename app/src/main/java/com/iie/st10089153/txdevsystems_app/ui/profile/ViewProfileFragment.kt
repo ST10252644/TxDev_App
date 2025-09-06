@@ -26,7 +26,7 @@ class ViewProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupClickListeners()
-       
+
     }
 
     private fun setupClickListeners() {
