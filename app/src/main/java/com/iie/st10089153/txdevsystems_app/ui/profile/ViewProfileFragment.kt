@@ -26,7 +26,7 @@ class ViewProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupClickListeners()
-        populateStaticData()
+       
     }
 
     private fun setupClickListeners() {
@@ -56,19 +56,7 @@ class ViewProfileFragment : Fragment() {
             .commit()
     }
 
-    private fun populateStaticData() {
-        // Static profile data for UI testing
-        binding.apply {
-            tvUsername.text = "Cherika.User"
-            tvFirstName.text = "Cherika"
-            tvLastName.text = "Bodde"
-            tvCellNumber.text = "082 000 0000"
-            tvEmail.text = "cherika.bodde@co.za"
-            tvPhoneNumber.text = "011 000 0000"
-            tvAddress.text = "Pam Straat 617"
-            tvAccountCreated.text = "2025-06-25 15:55:29"
-        }
-    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

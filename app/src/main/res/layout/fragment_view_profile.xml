@@ -85,7 +85,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text="Cherika.User"
+                        android:text=""
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -126,7 +126,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text="Cherika"
+                        android:text=""
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -167,7 +167,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text="Bodde"
+                        android:text=""
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -208,7 +208,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text="082 000 0000"
+                        android:text=""
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -249,7 +249,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text="cherika.bodde@co.za"
+                        android:text=""
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -290,7 +290,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text="011 000 0000"
+                        android:text=""
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -331,7 +331,7 @@
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
                         android:textColor="#ffffff"
-                        android:text="Pam Straat 617"
+                        android:text=""
                         android:paddingBottom="8dp"
                         android:textSize="16sp" />
 
@@ -373,7 +373,7 @@
                         android:gravity="center_vertical"
                         android:textColor="#888888"
                         android:textSize="16sp"
-                        android:text="2025-06-25 15:55:29"
+                        android:text=""
                         android:paddingBottom="8dp" />
 
                     <View
