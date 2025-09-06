@@ -1,6 +1,7 @@
 package com.iie.st10089153.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,12 @@ import com.iie.st10089153.txdevsystems_app.databinding.FragmentViewProfileBindin
 import com.iie.st10089153.txdevsystems_app.network.Api.AccountResponse
 import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
 import retrofit2.Call
+import com.iie.st10089153.txdevsystems_app.network.AccountResponse
+import com.iie.st10089153.txdevsystems_app.network.Api.ProfileApi
+import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ViewProfileFragment : Fragment() {
 
@@ -27,38 +34,52 @@ class ViewProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupClickListeners()
         fetchUserProfile() // <-- fetch from API
+        fetchUserProfile()  // <-- call API to fill fields
     }
 
 
     private fun setupClickListeners() {
-        // Back button - navigate back or close fragment
         binding.btnBack.setOnClickListener {
-            // Option 1: Use back stack if available
             if (parentFragmentManager.backStackEntryCount > 0) {
                 parentFragmentManager.popBackStack()
             } else {
-                // Option 2: Close activity or handle as needed
                 requireActivity().onBackPressed()
             }
         }
 
-        // Edit button - navigate to edit profile
         binding.btnEdit.setOnClickListener {
-            navigateToEditProfile()
+            val editProfileFragment = UpdateProfileFragment()
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.profile_fragment_container, editProfileFragment)
+                .addToBackStack("ViewProfile")
+                .commit()
         }
     }
 
     private fun navigateToEditProfile() {
         val editProfileFragment = UpdateProfileFragment()
+    private fun fetchUserProfile() {
+        val api = RetrofitClient.getInstance(requireContext()).create(ProfileApi::class.java)
 
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.profile_fragment_container, editProfileFragment)
-            .addToBackStack("ViewProfile")
-            .commit()
-    }
+        api.getProfile().enqueue(object : Callback<AccountResponse> {
+            override fun onResponse(
+                call: Call<AccountResponse>,
+                response: Response<AccountResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val account = response.body()!!
+                    binding.apply {
+                        tvUsername.text = account.username
+                        tvFirstName.text = account.first_name
+                        tvLastName.text = account.last_name
+                        tvCellNumber.text = account.cell ?: "N/A"
+                        tvEmail.text = account.email ?: "N/A"
+                        tvPhoneNumber.text = account.office_nr ?: "N/A"
+                        tvAddress.text = account.address ?: "N/A"
+                        tvAccountCreated.text = account.timestamp ?: "N/A"
+                    }
 
     private fun fetchUserProfile() {
         val api = RetrofitClient.getAccountApi(requireContext())
@@ -83,11 +104,14 @@ class ViewProfileFragment : Fragment() {
                 } else {
                     // show error
                     //tvUsername.text = "Failed to load profile"
+                } else {
+                    Log.e("ProfileDebug", "API response failed: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<AccountResponse>, t: Throwable) {
                 //tvUsername.text = "Error: ${t.localizedMessage}"
+                Log.e("ProfileDebug", "API call failed: ${t.localizedMessage}")
             }
         })
     }

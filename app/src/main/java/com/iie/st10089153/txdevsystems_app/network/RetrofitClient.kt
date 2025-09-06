@@ -6,6 +6,8 @@ import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnitsApi
 import com.iie.st10089153.txdevsystems_app.network.Api.DashboardApi
 import com.iie.st10089153.txdevsystems_app.network.Api.RangeApi
 import com.iie.st10089153.txdevsystems_app.network.Api.AccountApi
+import com.iie.st10089153.txdevsystems_app.network.Api.DeviceApi
+import com.iie.st10089153.txdevsystems_app.network.Api.ProfileApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.OkHttpClient
@@ -21,6 +23,8 @@ object RetrofitClient {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
+
+
 
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
@@ -58,6 +62,9 @@ object RetrofitClient {
         getInstance(context).create(RangeApi::class.java)
 
 
+    fun getProfileApi(context: Context): ProfileApi {
+        return getInstance(context).create(ProfileApi::class.java)
+    }
 
 
 }
