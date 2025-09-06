@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_device_settings"
+        android:title="Device Settings" />
+    <item
+        android:id="@+id/action_view_charts"
+        android:title="View Charts" />
+    <item
+        android:id="@+id/action_view_reports"
+        android:title="View Reports" />
+</menu>

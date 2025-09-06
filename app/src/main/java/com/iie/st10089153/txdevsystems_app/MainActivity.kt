@@ -1,99 +1,146 @@
 package com.iie.st10089153.txdevsystems_app
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.view.View
+import android.widget.PopupMenu
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.iie.st10089153.txdevsystems_app.databinding.ActivityMainBinding
+import com.iie.st10089153.txdevsystems_app.ui.login.LoginActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var navNotification: LinearLayout
-    private lateinit var navHome: LinearLayout
-    private lateinit var navProfile: LinearLayout
-
-    private lateinit var textNotification: TextView
-    private lateinit var textHome: TextView
-    private lateinit var textProfile: TextView
-
-    private lateinit var iconNotification: ImageView
-    private lateinit var iconHome: ImageView
-    private lateinit var iconProfile: ImageView
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        setupActionBarWithNavController(navController)
-
-        // Bottom nav views
-        navNotification = findViewById(R.id.nav_notification)
-        navHome = findViewById(R.id.nav_home)
-        navProfile = findViewById(R.id.nav_profile)
-
-        textNotification = findViewById(R.id.text_notification)
-        textHome = findViewById(R.id.text_home_nav)
-        textProfile = findViewById(R.id.text_profile)
-
-        iconNotification = findViewById(R.id.icon_notification)
-        iconHome = findViewById(R.id.icon_home)
-        iconProfile = findViewById(R.id.icon_profile)
-
-        // Listeners
-        navNotification.setOnClickListener {
-            setActiveTab("notification")
-            navController.navigate(R.id.navigation_notifications)
+        //  Check if user is logged in
+        val sharedPref = getSharedPreferences("auth_prefs", MODE_PRIVATE)
+        val token = sharedPref.getString("access_token", null)
+        if (token.isNullOrEmpty()) {
+            // No token → redirect to LoginActivity
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
         }
 
-        navHome.setOnClickListener {
-            setActiveTab("home")
+        //  Inflate layout and set toolbar
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.topNav)
+
+        // Setup NavController
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        val navView: BottomNavigationView = binding.navView
+        navView.setupWithNavController(navController)
+
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_home,
+                R.id.navigation_dashboard,
+                R.id.navigation_profile,
+                R.id.navigation_notifications
+            )
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+
+        // 🔹 Handle toolbar visibility & actions based on destination
+        navController.addOnDestinationChangedListener { _, destination, arguments ->
+            when (destination.id) {
+                R.id.navigation_home -> {
+                    binding.topNav.visibility = View.GONE
+                }
+                R.id.navigation_notifications -> {
+                    binding.topNav.visibility = View.VISIBLE
+                    binding.topNavBackButton.visibility = View.VISIBLE
+                    binding.topNavTitle.text = "Settings"
+                    binding.topNavRightButton.visibility = View.GONE
+                }
+                R.id.navigation_profile -> {
+                    binding.topNav.visibility = View.VISIBLE
+                    binding.topNavBackButton.visibility = View.VISIBLE
+                    binding.topNavTitle.text = "Edit Profile"
+                    binding.topNavRightButton.visibility = View.GONE
+                }
+                R.id.navigation_dashboard -> {
+                    binding.topNav.visibility = View.VISIBLE
+                    binding.topNavBackButton.visibility = View.VISIBLE
+                    binding.topNavTitle.text = "Dashboard"
+                    binding.topNavRightButton.visibility = View.VISIBLE
+                    binding.topNavRightButton.setImageResource(R.drawable.ic_settings)
+
+                    // 🔹 Show popup menu when clicking the settings icon
+                    binding.topNavRightButton.setOnClickListener { view ->
+                        val popup = PopupMenu(this, view)
+                        popup.menuInflater.inflate(R.menu.dashboard_settings_menu, popup.menu)
+
+                        popup.setOnMenuItemClickListener { item ->
+                            when (item.itemId) {
+                                R.id.action_device_settings -> {
+                                    navController.navigate(R.id.navigation_device_settings)
+                                    true
+                                }
+                                R.id.action_view_charts -> {
+                                    // Show second popup for charts
+                                    val chartsPopup = PopupMenu(this, view)
+                                    chartsPopup.menuInflater.inflate(R.menu.charts_menu, chartsPopup.menu)
+                                    chartsPopup.setOnMenuItemClickListener { chartItem ->
+                                        when (chartItem.itemId) {
+                                            R.id.action_temperature_chart -> {
+                                                navController.navigate(R.id.navigation_temperature_chart)
+                                                true
+                                            }
+                                            R.id.action_door_chart -> {
+                                                navController.navigate(R.id.navigation_door_history_chart)
+                                                true
+                                            }
+                                            R.id.action_battery_chart -> {
+                                                navController.navigate(R.id.navigation_battery_chart)
+                                                true
+                                            }
+                                            else -> false
+                                        }
+                                    }
+                                    chartsPopup.show()
+                                    true
+                                }
+                                R.id.action_view_reports -> {
+                                    //navController.navigate(R.id.navigation_reports)
+                                    true
+                                }
+                                else -> false
+                            }
+                        }
+                        popup.show()
+                    }
+                }
+
+
+                else -> {
+                    binding.topNav.visibility = View.VISIBLE
+                    binding.topNavBackButton.visibility = View.GONE
+                    binding.topNavTitle.text = "App"
+                    binding.topNavRightButton.visibility = View.GONE
+                }
+            }
+        }
+
+        // 🔹 Back button action
+        binding.topNavBackButton.setOnClickListener {
+            navController.navigateUp()
+        }
+
+        // Optional: navigate to home if intent says so
+        if (intent.getBooleanExtra("navigateToHome", false)) {
             navController.navigate(R.id.navigation_home)
         }
-
-        navProfile.setOnClickListener {
-            setActiveTab("profile")
-            navController.navigate(R.id.navigation_profile)
-        }
-    }
-
-    private fun setActiveTab(activeTab: String) {
-        resetTabColors()
-
-        val activeColor = ContextCompat.getColor(this, R.color.active_nav_color)
-        val inactiveColor = ContextCompat.getColor(this, R.color.inactive_nav_color)
-
-        // Reset all icons to default
-        iconNotification.setImageResource(R.drawable.elements)
-        iconHome.setImageResource(R.drawable.home2)
-        iconProfile.setImageResource(R.drawable.user)
-
-        when (activeTab) {
-            "notification" -> {
-                textNotification.setTextColor(activeColor)
-                iconNotification.setImageResource(R.drawable.elements1)
-                iconHome.setImageResource(R.drawable.home3) // home changes when other tab active
-            }
-            "home" -> {
-                textHome.setTextColor(activeColor)
-                iconHome.setImageResource(R.drawable.home2) // home active icon
-            }
-            "profile" -> {
-                textProfile.setTextColor(activeColor)
-                iconProfile.setImageResource(R.drawable.user1)
-                iconHome.setImageResource(R.drawable.home3) // home changes when other tab active
-            }
-        }
-    }
-
-    private fun resetTabColors() {
-        val inactiveColor = ContextCompat.getColor(this, R.color.inactive_nav_color)
-        textNotification.setTextColor(inactiveColor)
-        textHome.setTextColor(inactiveColor)
-        textProfile.setTextColor(inactiveColor)
     }
 
     override fun onSupportNavigateUp(): Boolean {
