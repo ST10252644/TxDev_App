@@ -14,8 +14,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 object RetrofitClient {
-   private const val BASE_URL = "http://192.168.5.5:30082/" //just Cherika use this
-    //private const val BASE_URL = "http://api.txdevsystems.co.za:65004/" //the rest use this one
+   //private const val BASE_URL = "http://192.168.5.5:30082/" //just Cherika use this
+    private const val BASE_URL = "http://api.txdevsystems.co.za:65004/" //the rest use this one
 
 
 
