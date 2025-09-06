@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.core.os.bundleOf
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iie.st10089153.txdevsystems_app.databinding.ActivityMainBinding
 import com.iie.st10089153.txdevsystems_app.ui.login.LoginActivity
@@ -84,7 +85,14 @@ class MainActivity : AppCompatActivity() {
                         popup.setOnMenuItemClickListener { item ->
                             when (item.itemId) {
                                 R.id.action_device_settings -> {
-                                    navController.navigate(R.id.navigation_device_settings)
+                                    // Get IMEI from current destination arguments
+                                    val currentImei = arguments?.getString("IMEI")
+                                    if (currentImei != null) {
+                                        navController.navigate(
+                                            R.id.action_dashboard_to_device_settings,
+                                            bundleOf("IMEI" to currentImei)
+                                        )
+                                    }
                                     true
                                 }
                                 R.id.action_view_charts -> {
@@ -92,27 +100,38 @@ class MainActivity : AppCompatActivity() {
                                     val chartsPopup = PopupMenu(this, view)
                                     chartsPopup.menuInflater.inflate(R.menu.charts_menu, chartsPopup.menu)
                                     chartsPopup.setOnMenuItemClickListener { chartItem ->
-                                        when (chartItem.itemId) {
-                                            R.id.action_temperature_chart -> {
-                                                navController.navigate(R.id.navigation_temperature_chart)
-                                                true
+                                        val currentImei = arguments?.getString("IMEI")
+                                        if (currentImei != null) {
+                                            val chartBundle = bundleOf("IMEI" to currentImei)
+                                            when (chartItem.itemId) {
+                                                R.id.action_temperature_chart -> {
+                                                    navController.navigate(R.id.navigation_temperature_chart, chartBundle)
+                                                    true
+                                                }
+                                                R.id.action_door_chart -> {
+                                                    navController.navigate(R.id.navigation_door_history_chart, chartBundle)
+                                                    true
+                                                }
+                                                R.id.action_battery_chart -> {
+                                                    navController.navigate(R.id.navigation_battery_chart, chartBundle)
+                                                    true
+                                                }
+                                                else -> false
                                             }
-                                            R.id.action_door_chart -> {
-                                                navController.navigate(R.id.navigation_door_history_chart)
-                                                true
-                                            }
-                                            R.id.action_battery_chart -> {
-                                                navController.navigate(R.id.navigation_battery_chart)
-                                                true
-                                            }
-                                            else -> false
-                                        }
+                                        } else false
                                     }
                                     chartsPopup.show()
                                     true
                                 }
                                 R.id.action_view_reports -> {
-                                    //navController.navigate(R.id.navigation_reports)
+                                    // Navigate to reports with IMEI
+                                    val currentImei = arguments?.getString("IMEI")
+                                    if (currentImei != null) {
+                                        navController.navigate(
+                                            R.id.action_dashboard_to_reports,
+                                            bundleOf("IMEI" to currentImei)
+                                        )
+                                    }
                                     true
                                 }
                                 else -> false
@@ -121,8 +140,12 @@ class MainActivity : AppCompatActivity() {
                         popup.show()
                     }
                 }
-
-
+                R.id.navigation_reports -> {
+                    binding.topNav.visibility = View.VISIBLE
+                    binding.topNavBackButton.visibility = View.VISIBLE
+                    binding.topNavTitle.text = "Data Report"
+                    binding.topNavRightButton.visibility = View.GONE
+                }
                 else -> {
                     binding.topNav.visibility = View.VISIBLE
                     binding.topNavBackButton.visibility = View.GONE

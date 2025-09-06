@@ -6,6 +6,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.GridLayoutManager
 import com.iie.st10089153.txdevsystems_app.R
 import com.iie.st10089153.txdevsystems_app.databinding.FragmentDashboardBinding
@@ -52,7 +53,6 @@ class DashboardFragment : Fragment() {
             R.id.action_device_settings -> {
                 currentImei?.let { imei ->
                     val bundle = Bundle().apply { putString("IMEI", imei) }
-                    // Use the action ID now
                     findNavController().navigate(R.id.action_dashboard_to_device_settings, bundle)
                 } ?: run {
                     Log.e("DashboardFragment", "Cannot open Device Settings: IMEI is null")
@@ -63,12 +63,27 @@ class DashboardFragment : Fragment() {
                 showChartsMenu()
                 true
             }
-            R.id.action_view_reports -> true
+            R.id.action_view_reports -> {
+                navigateToReports()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-
+    private fun navigateToReports() {
+        currentImei?.let { imei ->
+            // Get device name from navigation arguments if available
+            val deviceName = arguments?.getString("name") ?: "Device"
+            Log.d("DashboardFragment", "Navigating to reports with IMEI: $imei, Name: $deviceName")
+            findNavController().navigate(
+                R.id.action_dashboard_to_reports,
+                bundleOf("IMEI" to imei, "name" to deviceName)
+            )
+        } ?: run {
+            Log.e("DashboardFragment", "Cannot navigate to reports: IMEI is null")
+        }
+    }
 
     private fun showChartsMenu() {
         val anchor = requireView()
@@ -85,13 +100,13 @@ class DashboardFragment : Fragment() {
         popup.show()
     }
 
-
     private fun navigateToChart(chartDestination: Int) {
         currentImei?.let { imei ->
-            val bundle = Bundle().apply { putString("IMEI", currentImei) }
-            findNavController().navigate(R.id.action_dashboard_to_device_settings, bundle)
+            val bundle = Bundle().apply { putString("IMEI", imei) }
+            findNavController().navigate(chartDestination, bundle)
         } ?: Log.e("DashboardFragment", "Cannot navigate to chart: IMEI is null")
     }
+
     private fun loadDashboardItem(imei: String) {
         lifecycleScope.launch {
             try {

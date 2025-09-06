@@ -30,6 +30,21 @@
         <action
             android:id="@+id/action_dashboard_to_device_settings"
             app:destination="@id/navigation_device_settings" />
+        <action
+            android:id="@+id/action_dashboard_to_reports"
+            app:destination="@id/navigation_reports" />
+    </fragment>
+
+    <!-- REPORTS NAV (expects IMEI) -->
+    <fragment
+        android:id="@+id/navigation_reports"
+        android:name="com.iie.st10089153.txdevsystems_app.ui.reports.ReportsFragment"
+        android:label="Data Report"
+        tools:layout="@layout/fragment_reports">
+
+        <argument
+            android:name="IMEI"
+            app:argType="string" />
     </fragment>
 
     <!-- NOTIFICATIONS -->
