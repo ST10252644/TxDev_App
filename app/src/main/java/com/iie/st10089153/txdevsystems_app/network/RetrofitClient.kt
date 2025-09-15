@@ -8,6 +8,7 @@ import com.iie.st10089153.txdevsystems_app.network.Api.DashboardApi
 import com.iie.st10089153.txdevsystems_app.network.Api.NotificationsApi
 import com.iie.st10089153.txdevsystems_app.network.Api.RangeApi
 import com.iie.st10089153.txdevsystems_app.network.Api.DeviceApi
+import com.iie.st10089153.txdevsystems_app.network.Api.ProfileApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.OkHttpClient
@@ -41,6 +42,9 @@ object RetrofitClient {
     fun getAuthApi(context: Context): AuthApi {
         return getInstance(context).create(AuthApi::class.java)
     }
+
+    fun getProfileApi(context: Context): ProfileApi =
+        getInstance(context).create(ProfileApi::class.java)
 
     fun getAvailableUnitsApi(context: Context): AvailableUnitsApi {
         return getInstance(context).create(AvailableUnitsApi::class.java)
