@@ -7,6 +7,7 @@ import com.iie.st10089153.txdevsystems_app.MainActivity
 import com.iie.st10089153.txdevsystems_app.R
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
 import retrofit2.Call
@@ -18,6 +19,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var loginButton: Button
     private lateinit var usernameInput: EditText
     private lateinit var passwordInput: EditText
+    private lateinit var togglePasswordButton: ImageButton
+    private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +29,7 @@ class LoginActivity : AppCompatActivity() {
         loginButton = findViewById(R.id.loginButton)
         usernameInput = findViewById(R.id.usernameInput)
         passwordInput = findViewById(R.id.passwordInput)
+        togglePasswordButton = findViewById(R.id.btnTogglePassword)
 
         loginButton.setOnClickListener {
             val username = usernameInput.text.toString().trim()
@@ -37,6 +41,19 @@ class LoginActivity : AppCompatActivity() {
             }
 
             performLogin(username, password)
+        }
+
+        togglePasswordButton.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+            if (isPasswordVisible) {
+                passwordInput.inputType = android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                togglePasswordButton.setImageResource(R.drawable.ic_visibility)
+            } else {
+                passwordInput.inputType =
+                    android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                togglePasswordButton.setImageResource(R.drawable.ic_visibility_off)
+            }
+            passwordInput.setSelection(passwordInput.text.length) // move cursor to end
         }
     }
 

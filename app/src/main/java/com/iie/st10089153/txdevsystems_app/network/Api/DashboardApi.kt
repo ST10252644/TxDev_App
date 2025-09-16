@@ -15,19 +15,4 @@ interface DashboardApi {
 }
 
 
-//import retrofit2.Response
-//import retrofit2.http.POST
-//import retrofit2.http.Path
-//
-
-
-//
-//Marene's code
-//interface DashboardApi {
-//    @POST("txd_cold_room_data/current/{imei}")
-//    suspend fun getDashboardItem(
-//        @Path("imei") imei: String
-//    ): Response<dashboard_marene.models.DashboardItem>
-//}
-
 
