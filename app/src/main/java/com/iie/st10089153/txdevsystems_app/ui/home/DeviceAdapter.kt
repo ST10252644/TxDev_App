@@ -43,6 +43,7 @@ class DeviceAdapter(private val devices: List<AvailableUnit>) :
         // Bind static fields
         holder.deviceName.text = unit.name
 
+
         if (unit.status.equals("Active", ignoreCase = true)) {
             holder.deviceStatus.text = "● Online"
             holder.deviceStatus.setTextColor(
@@ -54,6 +55,7 @@ class DeviceAdapter(private val devices: List<AvailableUnit>) :
                 ContextCompat.getColor(holder.itemView.context, R.color.orange_offline)
             )
         }
+
 
         holder.deviceLastSeen.text = "Last refreshed: ${unit.last_seen}"
 

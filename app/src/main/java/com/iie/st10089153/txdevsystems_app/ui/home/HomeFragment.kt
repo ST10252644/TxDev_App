@@ -34,12 +34,15 @@ class HomeFragment : Fragment() {
 
         setupObservers()
         setupRecyclerView()
+
         setupSwipeRefresh()
+
         loadUserInfo()
         loadDevices()
 
         return binding.root
     }
+
 
 
     private fun setupObservers() {
@@ -49,12 +52,14 @@ class HomeFragment : Fragment() {
 
         homeViewModel.subtitleText.observe(viewLifecycleOwner) { subtitle ->
             binding.subtitleText.text = subtitle
+
         }
     }
 
     private fun setupRecyclerView() {
         binding.deviceRecyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
+
 
     private fun setupSwipeRefresh() {
         binding.swipeRefreshHome.setOnRefreshListener {
@@ -63,9 +68,15 @@ class HomeFragment : Fragment() {
         }
     }
 
+   
+
+      
+
+
     private fun loadUserInfo() {
         val accountApi = RetrofitClient.getAccountApi(requireContext())
         val accountCall = accountApi.lookupAccount(LookupAccountRequest())
+
 
         accountCall.enqueue(object : Callback<AccountResponse> {
             override fun onResponse(

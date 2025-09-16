@@ -16,7 +16,9 @@
     <color name="uneditable">#9E9E9E</color>
     <color name="green_success">#B8ED55</color> <!-- example green -->
     <color name="red_error">#EE0202</color>     <!-- example red -->
+
     <color name="orange_offline">#EB8C27</color>
+
 
     <color name="calendar_blue">#55BFED</color>
 

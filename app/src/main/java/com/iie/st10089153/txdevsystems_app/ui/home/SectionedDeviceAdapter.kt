@@ -78,6 +78,7 @@ class SectionedDeviceAdapter(private val items: List<SectionItem>) :
 
     private fun bindDevice(holder: DeviceViewHolder, unit: AvailableUnit) {
 
+
         holder.deviceName.text = unit.name
 
         if (unit.status.equals("Active", ignoreCase = true)) {
@@ -91,6 +92,7 @@ class SectionedDeviceAdapter(private val items: List<SectionItem>) :
                 ContextCompat.getColor(holder.itemView.context, R.color.orange_offline)
             )
         }
+
 
         holder.deviceLastSeen.text = "Last refreshed: ${unit.last_seen}"
 
