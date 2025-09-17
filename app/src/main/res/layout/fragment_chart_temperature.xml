@@ -68,6 +68,68 @@
                     android:orientation="vertical"
                     android:padding="16dp">
 
+                    <!-- Day / Week / Month (added) -->
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/toggleRange"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="10dp"
+                        app:singleSelection="true"
+                        app:selectionRequired="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnDay"
+                            android:layout_width="86dp"
+                            android:layout_height="48dp"
+                            android:insetLeft="0dp"
+                            android:insetRight="0dp"
+                            android:minWidth="0dp"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp"
+                            android:text="@string/day"
+                            android:textAllCaps="false"
+                            android:textColor="@color/white"
+                            app:backgroundTint="#202020"
+                            app:cornerRadius="16dp"
+                            app:strokeColor="#2B2B2B"
+                            app:strokeWidth="1dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnWeek"
+                            android:layout_width="82dp"
+                            android:layout_height="48dp"
+                            android:insetLeft="0dp"
+                            android:insetRight="0dp"
+                            android:minWidth="0dp"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp"
+                            android:text="@string/week"
+                            android:textAllCaps="false"
+                            android:textColor="@color/white"
+                            app:backgroundTint="#202020"
+                            app:cornerRadius="16dp"
+                            app:strokeColor="#2B2B2B"
+                            app:strokeWidth="1dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnMonth"
+                            android:layout_width="wrap_content"
+                            android:layout_height="48dp"
+                            android:checked="true"
+                            android:minWidth="0dp"
+                            android:insetLeft="0dp"
+                            android:insetRight="0dp"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp"
+                            android:text="@string/month"
+                            android:textAllCaps="false"
+                            android:textColor="@android:color/black"
+                            app:cornerRadius="16dp"
+                            app:backgroundTint="#B8ED55"
+                            app:strokeWidth="0dp"/>
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+
                     <!-- DATE PICKER BLOCK -->
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/cardTempFilters"
@@ -89,14 +151,17 @@
 
                             <TextView
                                 android:id="@+id/btnSelectDateTemp"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:text="@string/select_date"
                                 android:textColor="#88BFDE"
                                 android:textSize="14sp"
-                                app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                app:layout_constraintEnd_toStartOf="@+id/ivCalendarBattery2"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:ellipsize="end"
+                                android:maxLines="1" />
 
                             <ImageView
                                 android:id="@+id/ivCalendarBattery2"
@@ -106,9 +171,9 @@
                                 android:contentDescription="@string/calendar_cd"
                                 android:src="@drawable/ic_calendar"
                                 app:tint="@color/calendar_blue"
-                                app:layout_constraintBottom_toBottomOf="@id/btnSelectDateTemp"
+                                app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toTopOf="@id/btnSelectDateTemp"
-                                app:layout_constraintEnd_toEndOf="parent" />
+                                app:layout_constraintBottom_toBottomOf="@id/btnSelectDateTemp" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -117,7 +182,6 @@
                         android:id="@+id/tvRangeLabel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="—"
                         android:textColor="@color/white"
                         android:textStyle="bold"
                         android:gravity="center"
@@ -150,7 +214,7 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- Legend (extra top margin added) -->
+                    <!-- Legend -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

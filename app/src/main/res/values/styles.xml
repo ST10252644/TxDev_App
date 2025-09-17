@@ -59,5 +59,8 @@
         <item name="android:layout_marginEnd">8dp</item>
     </style>
 
+    <style name="Widget.Custom.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="backgroundTint">@color/tertiary</item>
+    </style>
 
 </resources>
