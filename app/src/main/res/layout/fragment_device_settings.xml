@@ -1,13 +1,185 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:gravity="center"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#1a1a1a"
+    android:orientation="vertical">
 
-    <TextView
-        android:text="Device Settings Page"
-        android:textSize="20sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="4dp"
+            app:tint="#ffffff" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Edit Device Settings"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginEnd="28dp" />
+    </LinearLayout>
+
+    <!-- Scrollable content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:descendantFocusability="beforeDescendants">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Device Name -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Device Name"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp" />
+            <EditText
+                android:id="@+id/etDeviceName"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="#333333"
+                android:textColor="#ffffff"
+                android:textColorHint="#888888"
+                android:hint="Enter device name"
+                android:padding="8dp"
+                android:textSize="16sp" />
+
+            <!-- Device ID -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Device ID"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+            <TextView
+                android:id="@+id/tvDeviceID"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center_vertical"
+                android:textColor="#888888"
+                android:textSize="16sp"
+                android:text="1234567890"
+                android:background="#333333"
+                android:padding="8dp" />
+
+            <!-- High Temp -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="High Temperature Alert"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+            <EditText
+                android:id="@+id/etHighTemp"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="#333333"
+                android:textColor="#ffffff"
+                android:textColorHint="#888888"
+                android:hint="Enter high temp"
+                android:inputType="numberDecimal"
+                android:padding="8dp"
+                android:textSize="16sp" />
+
+            <!-- Low Temp -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Low Temperature Alert"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+            <EditText
+                android:id="@+id/etLowTemp"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="#333333"
+                android:textColor="#ffffff"
+                android:textColorHint="#888888"
+                android:hint="Enter low temp"
+                android:inputType="numberDecimal"
+                android:padding="8dp"
+                android:textSize="16sp" />
+
+            <!-- Door Time -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Door Time To Alert"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+            <EditText
+                android:id="@+id/etDoorAlertTime"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="#333333"
+                android:textColor="#ffffff"
+                android:textColorHint="#888888"
+                android:hint="Enter door alert time"
+                android:inputType="text"
+                android:padding="8dp"
+                android:textSize="16sp" />
+
+            <!-- Door NO/NC -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Door NO/NC Selection"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp" />
+            <Spinner
+                android:id="@+id/spinnerDoorType"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@android:color/transparent"
+                android:popupBackground="#1a1a1a" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Save Changes Button -->
+    <Button
+        android:id="@+id/btnSaveChanges"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_margin="24dp"
+        android:background="@drawable/save_button_background"
+        android:text="Save Changes"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:elevation="2dp" />
+
 </LinearLayout>

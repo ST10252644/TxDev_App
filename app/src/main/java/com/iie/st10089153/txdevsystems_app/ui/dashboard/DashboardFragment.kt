@@ -6,6 +6,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.GridLayoutManager
 import com.iie.st10089153.txdevsystems_app.R
 import com.iie.st10089153.txdevsystems_app.databinding.FragmentDashboardBinding
@@ -31,21 +32,13 @@ class DashboardFragment : Fragment() {
         Log.d("DashboardFragment", "onCreateView called")
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
 
-        // 1) Receive IMEI from Home
         currentImei = arguments?.getString("IMEI")
         Log.d("DashboardFragment", "Received IMEI: $currentImei")
-
-        // 2) Make IMEI available to all next destinations in this back stack
-        findNavController().currentBackStackEntry?.savedStateHandle?.set("IMEI", currentImei)
 
         binding.gaugeRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.gaugeRecyclerView.adapter = GaugeAdapter(emptyList())
 
-        if (!currentImei.isNullOrEmpty()) {
-            loadDashboardItem(currentImei!!)
-        } else {
-            Log.e("DashboardFragment", "IMEI not provided!")
-        }
+        currentImei?.let { loadDashboardItem(it) } ?: Log.e("DashboardFragment", "IMEI not provided!")
 
         return binding.root
     }
@@ -58,7 +51,12 @@ class DashboardFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_device_settings -> {
-                // Handle device settings
+                currentImei?.let { imei ->
+                    val bundle = Bundle().apply { putString("IMEI", imei) }
+                    findNavController().navigate(R.id.action_dashboard_to_device_settings, bundle)
+                } ?: run {
+                    Log.e("DashboardFragment", "Cannot open Device Settings: IMEI is null")
+                }
                 true
             }
             R.id.action_view_charts -> {
@@ -66,15 +64,29 @@ class DashboardFragment : Fragment() {
                 true
             }
             R.id.action_view_reports -> {
-                // Handle reports
+                navigateToReports()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    private fun navigateToReports() {
+        currentImei?.let { imei ->
+            // Get device name from navigation arguments if available
+            val deviceName = arguments?.getString("name") ?: "Device"
+            Log.d("DashboardFragment", "Navigating to reports with IMEI: $imei, Name: $deviceName")
+            findNavController().navigate(
+                R.id.action_dashboard_to_reports,
+                bundleOf("IMEI" to imei, "name" to deviceName)
+            )
+        } ?: run {
+            Log.e("DashboardFragment", "Cannot navigate to reports: IMEI is null")
+        }
+    }
+
     private fun showChartsMenu() {
-        val anchor = requireView() // or use a toolbar view if you have one
+        val anchor = requireView()
         val popup = androidx.appcompat.widget.PopupMenu(requireContext(), anchor)
         popup.menuInflater.inflate(R.menu.charts_menu, popup.menu)
         popup.setOnMenuItemClickListener { menuItem ->
@@ -89,19 +101,10 @@ class DashboardFragment : Fragment() {
     }
 
     private fun navigateToChart(chartDestination: Int) {
-        val imei = currentImei
-        if (imei.isNullOrBlank()) {
-            Log.e("DashboardFragment", "Cannot navigate to chart: IMEI is null")
-            return
-        }
-        val bundle = Bundle().apply {
-            // Provide all common keys so any reader will find it
-            putString("IMEI", imei)
-            putString("imei", imei)
-            putString("device_imei", imei)
-            putString("selectedImei", imei)
-        }
-        findNavController().navigate(chartDestination, bundle)
+        currentImei?.let { imei ->
+            val bundle = Bundle().apply { putString("IMEI", imei) }
+            findNavController().navigate(chartDestination, bundle)
+        } ?: Log.e("DashboardFragment", "Cannot navigate to chart: IMEI is null")
     }
 
     private fun loadDashboardItem(imei: String) {
@@ -116,8 +119,8 @@ class DashboardFragment : Fragment() {
                             iconRes = R.drawable.ic_power,
                             statusText = if (item.supply_status == "Okay") "ON" else "OFF",
                             name = "Power",
-                            gaugeImageRes = if (item.supply_status == "Okay")
-                                R.drawable.power_on else R.drawable.circle_placeholder
+                            gaugeImageRes = if (item.supply_status == "Okay") R.drawable.power_on else R.drawable.power_off,
+                            type = "" // no gauge
                         ),
                         GaugeCard(
                             iconRes = R.drawable.ic_battery_full,
@@ -126,7 +129,8 @@ class DashboardFragment : Fragment() {
                             measurement = "Volts",
                             minValue = 0f,
                             maxValue = 15f,
-                            gaugeImageRes = R.drawable.circle_placeholder
+                            gaugeImageRes = R.drawable.circle_placeholder,
+                            type = "battery" // battery gauge
                         ),
                         GaugeCard(
                             iconRes = R.drawable.ic_temperature,
@@ -135,16 +139,18 @@ class DashboardFragment : Fragment() {
                             measurement = "°C",
                             gaugeImageRes = R.drawable.circle_placeholder,
                             minValue = item.temp_min.toFloat(),
-                            maxValue = item.temp_max.toFloat()
+                            maxValue = item.temp_max.toFloat(),
+                            type = "temperature" // temperature gauge
                         ),
                         GaugeCard(
                             iconRes = R.drawable.ic_door_close,
                             statusText = item.door_status,
                             name = "Door",
-                            gaugeImageRes = if (item.door_status_bool == 0)
-                                R.drawable.door_closed else R.drawable.circle_placeholder
+                            gaugeImageRes = if (item.door_status_bool == 0) R.drawable.door_closed else R.drawable.door_open,
+                            type = "" // no gauge
                         )
                     )
+
                     binding.gaugeRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
                     binding.gaugeRecyclerView.adapter = GaugeAdapter(gaugeList)
                 } else {

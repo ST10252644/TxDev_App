@@ -3,24 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Temperature Gauge -->
-    <com.github.anastr.speedviewlib.SpeedView
-        android:id="@+id/tempGauge"
+    <FrameLayout
+        android:id="@+id/gaugeContainer"
         android:layout_width="130dp"
         android:layout_height="130dp"
-        app:sv_indicator="NeedleIndicator"
-        app:sv_indicatorColor="#D67973"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:sv_speedTextSize="18sp"
-        app:sv_tickNumber="11"
-        app:sv_unit="°C"
-        app:sv_unitTextSize="14sp"
-        app:sv_withTremble="false"
-        app:sv_startDegree="135"
-        app:sv_endDegree="405"
-        app:sv_centerCircleColor="@android:color/transparent"
-        app:sv_backgroundCircleColor="@android:color/transparent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Custom Canvas Background -->
+        <com.iie.st10089153.txdevsystems_app.ui.dashboard.views.GaugeBackgroundView
+            android:id="@+id/gaugeBackgroundView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
