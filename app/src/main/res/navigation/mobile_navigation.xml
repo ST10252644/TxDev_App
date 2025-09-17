@@ -92,6 +92,7 @@
             app:argType="string" />
     </fragment>
 
+    <!--DEVICE SETTINGS-->
     <fragment
         android:id="@+id/navigation_device_settings"
         android:name="com.iie.st10089153.txdevsystems_app.ui.device.DeviceSettingsFragment"
