@@ -77,10 +77,23 @@ class SectionedDeviceAdapter(private val items: List<SectionItem>) :
     }
 
     private fun bindDevice(holder: DeviceViewHolder, unit: AvailableUnit) {
-        // Bind static fields
+
+
         holder.deviceName.text = unit.name
-        holder.deviceStatus.text =
-            if (unit.status.equals("Active", ignoreCase = true)) "● Online" else "● Offline"
+
+        if (unit.status.equals("Active", ignoreCase = true)) {
+            holder.deviceStatus.text = "● Online"
+            holder.deviceStatus.setTextColor(
+                ContextCompat.getColor(holder.itemView.context, R.color.primary)
+            )
+        } else {
+            holder.deviceStatus.text = "● Offline"
+            holder.deviceStatus.setTextColor(
+                ContextCompat.getColor(holder.itemView.context, R.color.orange_offline)
+            )
+        }
+
+
         holder.deviceLastSeen.text = "Last refreshed: ${unit.last_seen}"
 
         // Keep track of which IMEI this view is currently showing
