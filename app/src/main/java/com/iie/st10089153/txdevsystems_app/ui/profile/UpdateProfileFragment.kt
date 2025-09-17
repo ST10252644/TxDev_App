@@ -41,10 +41,6 @@ class UpdateProfileFragment : Fragment() {
     }
 
     private fun setupUI() {
-        // Back button click listener
-        binding.btnBack.setOnClickListener {
-            navigateBackToViewProfile()
-        }
 
         // Save button click listener
         binding.btnSaveChanges.setOnClickListener {

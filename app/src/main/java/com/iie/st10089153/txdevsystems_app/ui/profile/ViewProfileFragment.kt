@@ -30,7 +30,6 @@ class ViewProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupClickListeners()
         fetchUserProfile()
     }
 
@@ -40,15 +39,6 @@ class ViewProfileFragment : Fragment() {
         fetchUserProfile()
     }
 
-    private fun setupClickListeners() {
-        binding.btnEdit.setOnClickListener {
-            val editProfileFragment = UpdateProfileFragment()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.profile_fragment_container, editProfileFragment)
-                .addToBackStack("ViewProfile")
-                .commit()
-        }
-    }
 
     private fun fetchUserProfile() {
         val api = RetrofitClient.getProfileApi(requireContext())
