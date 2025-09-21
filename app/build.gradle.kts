@@ -26,15 +26,19 @@ android {
     }
 
     signingConfigs {
-        // Use the existing debug config instead of creating a new one
         getByName("debug") {
-            val keystoreFile = File(buildDir, "debug.keystore")
-            storeFile = keystoreFile
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
+            val keystoreFile = File(System.getProperty("user.home"), ".android/debug.keystore")
+            if (keystoreFile.exists()) {
+                storeFile = keystoreFile
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            } else {
+                println("Local debug keystore not found, relying on default Android Studio generation.")
+            }
         }
     }
+
 
     buildTypes {
         getByName("debug") {
@@ -89,7 +93,10 @@ android {
 tasks.register("writeDebugKeystore") {
     doLast {
         val keystoreBase64 = System.getenv("DEBUG_KEYSTORE_B64")
-            ?: throw GradleException("DEBUG_KEYSTORE_B64 env variable not set")
+        if (keystoreBase64.isNullOrBlank()) {
+            println("DEBUG_KEYSTORE_B64 not set. Skipping debug keystore generation.")
+            return@doLast
+        }
 
         val keystoreBytes = Base64.getDecoder().decode(keystoreBase64.replace("\\s".toRegex(), ""))
         val keystoreFile = File(buildDir, "debug.keystore")
