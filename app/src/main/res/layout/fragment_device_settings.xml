@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1a1a1a"
+    android:background="@color/black_background"
     android:orientation="vertical">
     <!-- Scrollable form content -->
     <ScrollView
@@ -30,9 +30,11 @@
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:text="Device Name"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -45,17 +47,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@android:color/transparent"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#888888"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
                         android:hint="Enter device name"
-                        android:paddingBottom="8dp"
                         android:textSize="16sp"
-                        android:enabled="false"/>
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -71,9 +74,11 @@
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:text="Device ID"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -86,14 +91,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
-                        android:textColor="#888888"
                         android:textSize="16sp"
-                        android:paddingBottom="8dp" />
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -109,9 +116,11 @@
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:text="High Temp Alert"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -124,18 +133,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@android:color/transparent"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#888888"
                         android:hint="Enter high temp"
                         android:inputType="numberSigned"
-                        android:paddingBottom="8dp"
                         android:textSize="16sp"
-                        android:enabled="false" />
+                        android:enabled="false"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -151,9 +161,11 @@
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:text="Low Temp Alert"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -166,18 +178,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@android:color/transparent"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#888888"
                         android:hint="Enter low temp"
                         android:inputType="numberSigned"
-                        android:paddingBottom="8dp"
                         android:textSize="16sp"
-                        android:enabled="false"/>
+                        android:enabled="false"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -193,9 +206,11 @@
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:text="Door Alert Time"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -208,17 +223,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@android:color/transparent"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#888888"
                         android:hint="Enter door alert time"
-                        android:paddingBottom="8dp"
                         android:textSize="16sp"
-                        android:enabled="false"/>
+                        android:enabled="false"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -234,9 +250,11 @@
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
                     android:text="Door NO/NC"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -254,7 +272,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -275,8 +293,9 @@
             android:backgroundTint="#B8ED55"
             android:textColor="#000000"
             android:textStyle="bold"
-            app:cornerRadius="12dp"
+            app:cornerRadius="2dp"
             android:elevation="2dp"
+            android:fontFamily="@font/poppinssemibold"
             app:layout_constraintHorizontal_bias="1.0"/>
 
     </LinearLayout>
