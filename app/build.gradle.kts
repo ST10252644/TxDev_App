@@ -1,9 +1,15 @@
 import org.gradle.kotlin.dsl.androidTestImplementation
 import org.gradle.kotlin.dsl.testImplementation
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.Base64
+import java.io.File
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
+    id("io.gitlab.arturbosch.detekt")
+    id("org.owasp.dependencycheck")
 }
 
 android {
@@ -16,13 +22,25 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 
+    signingConfigs {
+        // Use the existing debug config instead of creating a new one
+        getByName("debug") {
+            val keystoreFile = File(buildDir, "debug.keystore")
+            storeFile = keystoreFile
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
     }
 
     buildTypes {
-        release {
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -30,17 +48,26 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         viewBinding = true
     }
+
+    lint {
+        disable += setOf("NewApi")
+        abortOnError = true
+        warningsAsErrors = false
+    }
+
     packaging {
         resources {
             excludes += setOf(
@@ -56,6 +83,25 @@ android {
             )
         }
     }
+}
+
+// Task to write debug keystore from base64 before build
+tasks.register("writeDebugKeystore") {
+    doLast {
+        val keystoreBase64 = System.getenv("DEBUG_KEYSTORE_B64")
+            ?: throw GradleException("DEBUG_KEYSTORE_B64 env variable not set")
+
+        val keystoreBytes = Base64.getDecoder().decode(keystoreBase64.replace("\\s".toRegex(), ""))
+        val keystoreFile = File(buildDir, "debug.keystore")
+        keystoreFile.parentFile.mkdirs()
+        keystoreFile.writeBytes(keystoreBytes)
+        println("Debug keystore written to ${keystoreFile.absolutePath}")
+    }
+}
+
+// Ensure debug keystore exists before building
+tasks.named("preBuild") {
+    dependsOn("writeDebugKeystore")
 }
 
 dependencies {
@@ -116,10 +162,10 @@ dependencies {
     // Fragment testing (debug only)
     debugImplementation("androidx.fragment:fragment-testing:1.6.1")
 
-    //bouncy castle or something 
-    implementation("org.bouncycastle:bcprov-jdk15on:1.73")
+}
 
 
-
-
+// Ensure both tools run during check
+tasks.named("check") {
+    dependsOn("detekt", "dependencyCheckAnalyze")
 }

@@ -124,7 +124,7 @@ class HomeFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<List<AvailableUnit>>, t: Throwable) {
-                binding.swipeRefreshHome.isRefreshing = false // ✅ stop spinner even on error
+                binding.swipeRefreshHome.isRefreshing = false // stop spinner even on error
                 Toast.makeText(requireContext(), "Error: ${t.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         })
