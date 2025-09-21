@@ -16,10 +16,46 @@ import com.iie.st10089153.txdevsystems_app.ui.login.LoginActivity
 
 class MainActivity : AppCompatActivity() {
 
+    // inactivity timeout in milliseconds (e.g. 5 min = 300000)
+    private val logoutTime: Long = 5 * 60 * 1000
+    private val handler = Handler(Looper.getMainLooper())
+    private val logoutRunnable = Runnable {
+        // Clear user session here
+        // For example, clear token and navigate to login screen
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        // Reset the timer on user activity
+        resetLogoutTimer()
+    }
+
+    private fun resetLogoutTimer() {
+        handler.removeCallbacks(logoutRunnable)
+        handler.postDelayed(logoutRunnable, logoutTime)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Optional: stop the timer if app goes background
+        handler.removeCallbacks(logoutRunnable)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Restart timer when coming back
+        resetLogoutTimer()
+    }
+
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         //  Check if user is logged in
         val sharedPref = getSharedPreferences("auth_prefs", MODE_PRIVATE)
