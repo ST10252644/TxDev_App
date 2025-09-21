@@ -116,6 +116,9 @@ dependencies {
     // Fragment testing (debug only)
     debugImplementation("androidx.fragment:fragment-testing:1.6.1")
 
+    //bouncy castle or something 
+    implementation("org.bouncycastle:bcprov-jdk15on:1.73")
+
 
 
 
