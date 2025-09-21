@@ -138,5 +138,6 @@ dependencies {
 
     // Fragment testing (debug only)
     debugImplementation("androidx.fragment:fragment-testing:1.6.1")
+}
 
 
