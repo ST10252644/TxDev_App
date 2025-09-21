@@ -88,7 +88,7 @@ jobs:
           find . -name "AndroidManifest.xml" -type f
 
       - name: Gradle Dependencies Check
-        run: ./gradlew dependencies --configuration debugRuntimeClasspath
+        run: ./gradlew :app:dependencies --configuration debugRuntimeClasspath
 
       - name: Clean Project
         run: ./gradlew clean
