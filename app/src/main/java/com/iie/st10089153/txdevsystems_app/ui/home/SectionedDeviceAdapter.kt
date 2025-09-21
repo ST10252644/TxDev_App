@@ -61,10 +61,9 @@ class SectionedDeviceAdapter(private val items: List<SectionItem>) :
 
         activity.lifecycleScope.launch {
             try {
-                // Get current time and 24 hours ago for range request
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
                 val currentTime = Date()
-                val oneDayAgo = Date(currentTime.time - 24 * 60 * 60 * 1000) // 24 hours ago
+                val oneDayAgo = Date(currentTime.time - 24 * 60 * 60 * 1000)
 
                 val rangeApi = RetrofitClient.getRangeApi(context)
                 val rangeResponse = withContext(Dispatchers.IO) {
@@ -78,12 +77,9 @@ class SectionedDeviceAdapter(private val items: List<SectionItem>) :
                 }
 
                 if (rangeResponse.isSuccessful && !rangeResponse.body().isNullOrEmpty()) {
-                    // If the view was recycled to another item, ignore this result
                     if (holder.itemView.tag != imei) return@launch
 
                     val rangeData = rangeResponse.body()!!
-
-                    // Find the most recent range data point
                     val latestRangePoint = rangeData.maxByOrNull { it.timestamp }
 
                     if (latestRangePoint != null) {
@@ -92,45 +88,43 @@ class SectionedDeviceAdapter(private val items: List<SectionItem>) :
                         val tempNow = parseTemperature(currentTemp)
 
                         if (tempMin != null && tempMax != null && tempNow != null) {
-                            // Check if temperature is within range
-                            val isInRange = tempNow >= tempMin && tempNow <= tempMax
-
-                            if (isInRange) {
-                                // Temperature is within range - use green
-                                holder.deviceTemp.setTextColor(
-                                    ContextCompat.getColor(context, R.color.primary)
-                                )
-                            } else {
-                                // Temperature is out of range - use red (overrides online/offline logic)
-                                holder.deviceTemp.setTextColor(
-                                    ContextCompat.getColor(context, R.color.red_error)
-                                )
+                            // Decide color based on range
+                            val colorRes = when {
+                                !isOnline -> R.color.orange_offline //
+                                tempNow < tempMin -> R.color.blue_cool //
+                                tempNow > tempMax -> R.color.red_error //
+                                else -> R.color.primary              //
                             }
 
-                            android.util.Log.d("TemperatureRange",
-                                "IMEI: $imei, Current: $tempNow, Range: $tempMin-$tempMax, InRange: $isInRange")
+                            holder.deviceTemp.setTextColor(ContextCompat.getColor(context, colorRes))
+
+                            android.util.Log.d(
+                                "TemperatureRange",
+                                "IMEI: $imei, Current: $tempNow, Range: $tempMin-$tempMax, Color: $colorRes"
+                            )
                         } else {
-                            // Failed to parse temperatures - fallback to original logic
                             fallbackTemperatureColor(holder, isOnline, context)
                         }
                     } else {
-                        // No range data - fallback to original logic
                         fallbackTemperatureColor(holder, isOnline, context)
                     }
                 } else {
-                    android.util.Log.w("TemperatureRange",
-                        "Range API failed for IMEI: $imei, code: ${rangeResponse.code()}")
-                    // API failed - fallback to original logic
+                    android.util.Log.w(
+                        "TemperatureRange",
+                        "Range API failed for IMEI: $imei, code: ${rangeResponse.code()}"
+                    )
                     fallbackTemperatureColor(holder, isOnline, context)
                 }
             } catch (e: Exception) {
-                android.util.Log.e("TemperatureRange",
-                    "Exception checking temperature range for IMEI: $imei, error: ${e.localizedMessage}")
-                // Exception occurred - fallback to original logic
+                android.util.Log.e(
+                    "TemperatureRange",
+                    "Exception checking temperature range for IMEI: $imei, error: ${e.localizedMessage}"
+                )
                 fallbackTemperatureColor(holder, isOnline, context)
             }
         }
     }
+
 
     private fun parseTemperature(temp: Any?): Double? {
         return when (temp) {
@@ -209,11 +203,22 @@ class SectionedDeviceAdapter(private val items: List<SectionItem>) :
             holder.deviceStatus.setTextColor(
                 ContextCompat.getColor(holder.itemView.context, R.color.primary)
             )
+            holder.deviceStatus.setShadowLayer(
+                6f,  // blur radius (similar to your Figma "blur: 4")
+                0f,  // x-offset (no horizontal shift)
+                0f,  // y-offset (no vertical shift)
+                ContextCompat.getColor(holder.itemView.context, R.color.primary) // glow color
+            )
         } else {
             holder.deviceStatus.text = "● Offline"
             holder.deviceStatus.setTextColor(
                 ContextCompat.getColor(holder.itemView.context, R.color.orange_offline)
             )
+            holder.deviceStatus.setShadowLayer(
+                6f, 0f, 0f,
+                ContextCompat.getColor(holder.itemView.context, R.color.orange_offline)
+            )
+
         }
 
         holder.deviceLastSeen.text = "Last refreshed: ${unit.last_seen}"
@@ -338,7 +343,7 @@ class SectionedDeviceAdapter(private val items: List<SectionItem>) :
         holder.itemView.setOnClickListener { v ->
             v.findNavController().navigate(
                 R.id.action_home_to_dashboard,
-                bundleOf("IMEI" to unit.imei, "name" to unit.name)
+                bundleOf("IMEI" to unit.imei, "name" to unit.name, "last_seen" to unit.last_seen)
             )
         }
     }

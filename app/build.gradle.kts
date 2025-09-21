@@ -1,10 +1,17 @@
 import org.gradle.kotlin.dsl.androidTestImplementation
 import org.gradle.kotlin.dsl.testImplementation
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+//Gradle Scripts build.gradle.kts (Module :app)
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
+    // Apply Detekt & Dependency Check here
+    id("io.gitlab.arturbosch.detekt")
+    id("org.owasp.dependencycheck")
 }
+
 
 android {
     namespace = "com.iie.st10089153.txdevsystems_app"
@@ -41,6 +48,20 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    lint {
+        // Configure lint for desugaring support
+        disable += setOf(
+            "NewApi" // Disable NewApi checks since we're using desugaring
+        )
+        // Alternative: create baseline to ignore existing issues
+        // baseline = file("lint-baseline.xml")
+
+        // Make lint less strict for CI/CD but still catch real issues
+        abortOnError = true
+        warningsAsErrors = false
+    }
+
     packaging {
         resources {
             excludes += setOf(
@@ -116,7 +137,9 @@ dependencies {
     // Fragment testing (debug only)
     debugImplementation("androidx.fragment:fragment-testing:1.6.1")
 
+}
 
-
-
+// Ensure both tools run during check
+tasks.named("check") {
+    dependsOn("detekt", "dependencyCheckAnalyze")
 }
