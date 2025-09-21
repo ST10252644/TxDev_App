@@ -1,17 +1,16 @@
 import org.gradle.kotlin.dsl.androidTestImplementation
 import org.gradle.kotlin.dsl.testImplementation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.Base64
+import java.io.File
 
-//Gradle Scripts build.gradle.kts (Module :app)
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
 
-    // Apply Detekt & Dependency Check here
     id("io.gitlab.arturbosch.detekt")
     id("org.owasp.dependencycheck")
 }
-
 
 android {
     namespace = "com.iie.st10089153.txdevsystems_app"
@@ -23,17 +22,25 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
 
+    signingConfigs {
+        // Use the existing debug config instead of creating a new one
+        getByName("debug") {
+            val keystoreFile = File(buildDir, "debug.keystore")
+            storeFile = keystoreFile
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
     }
 
     buildTypes {
-        debug {
-            // Optional: enable debugging flags if needed
-            isDebuggable = true
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
         }
-        release {
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -41,25 +48,22 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         viewBinding = true
     }
 
     lint {
-        // Configure lint for desugaring support
-        disable += setOf(
-            "NewApi" // Disable NewApi checks since we're using desugaring
-        )
-
-        // Make lint less strict for CI/CD but still catch real issues
+        disable += setOf("NewApi")
         abortOnError = true
         warningsAsErrors = false
     }
@@ -79,6 +83,25 @@ android {
             )
         }
     }
+}
+
+// Task to write debug keystore from base64 before build
+tasks.register("writeDebugKeystore") {
+    doLast {
+        val keystoreBase64 = System.getenv("DEBUG_KEYSTORE_B64")
+            ?: throw GradleException("DEBUG_KEYSTORE_B64 env variable not set")
+
+        val keystoreBytes = Base64.getDecoder().decode(keystoreBase64.replace("\\s".toRegex(), ""))
+        val keystoreFile = File(buildDir, "debug.keystore")
+        keystoreFile.parentFile.mkdirs()
+        keystoreFile.writeBytes(keystoreBytes)
+        println("Debug keystore written to ${keystoreFile.absolutePath}")
+    }
+}
+
+// Ensure debug keystore exists before building
+tasks.named("preBuild") {
+    dependsOn("writeDebugKeystore")
 }
 
 dependencies {
@@ -138,6 +161,11 @@ dependencies {
 
     // Fragment testing (debug only)
     debugImplementation("androidx.fragment:fragment-testing:1.6.1")
+
 }
 
 
+// Ensure both tools run during check
+tasks.named("check") {
+    dependsOn("detekt", "dependencyCheckAnalyze")
+}
