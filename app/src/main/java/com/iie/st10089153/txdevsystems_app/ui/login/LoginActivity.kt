@@ -2,6 +2,7 @@ package com.iie.st10089153.txdevsystems_app.ui.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.iie.st10089153.txdevsystems_app.MainActivity
 import com.iie.st10089153.txdevsystems_app.R
@@ -30,6 +31,11 @@ class LoginActivity : AppCompatActivity() {
         usernameInput = findViewById(R.id.usernameInput)
         passwordInput = findViewById(R.id.passwordInput)
         togglePasswordButton = findViewById(R.id.btnTogglePassword)
+
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
 
         loginButton.setOnClickListener {
             val username = usernameInput.text.toString().trim()

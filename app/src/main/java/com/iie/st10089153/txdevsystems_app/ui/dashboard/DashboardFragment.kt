@@ -3,7 +3,6 @@ package com.iie.st10089153.txdevsystems_app.ui.dashboard
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -20,11 +19,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
+import com.iie.st10089153.txdevsystems_app.MainActivity
 
 class DashboardFragment : Fragment() {
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
     private var currentImei: String? = null
+    private var currentDeviceName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +39,20 @@ class DashboardFragment : Fragment() {
         Log.d("DashboardFragment", "onCreateView called")
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
 
+        // ✅ Read IMEI + Name from arguments
         currentImei = arguments?.getString("IMEI")
-        Log.d("DashboardFragment", "Received IMEI: $currentImei")
+        currentDeviceName = arguments?.getString("name") ?: "Device"
+        val lastSeen = arguments?.getString("last_seen") ?: "--"
+        Log.d("DashboardFragment", "Received IMEI: $currentImei, Name: $currentDeviceName")
+
+        // Set initial last refreshed text
+        binding.tvLastRefreshed.text = "Last refreshed: $lastSeen"
+
+        // ✅ Set top nav title dynamically
+        (requireActivity() as? MainActivity)?.apply {
+            setTopNavTitle(currentDeviceName ?: "Device")
+            currentUnitName = currentDeviceName // store globally so popup menus know what to show
+        }
 
         setupRecyclerView()
         setupSwipeRefresh()
@@ -160,13 +173,6 @@ class DashboardFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_device_settings -> {
-                currentImei?.let { imei ->
-                    val bundle = Bundle().apply { putString("IMEI", imei) }
-                    findNavController().navigate(R.id.action_dashboard_to_device_settings, bundle)
-                } ?: run { showErrorState("Cannot open Device Settings: IMEI is null") }
-                true
-            }
             R.id.action_view_charts -> {
                 showCustomChartsMenu()
                 true
@@ -175,21 +181,42 @@ class DashboardFragment : Fragment() {
                 navigateToReports()
                 true
             }
+            R.id.action_dashboard_to_device_settings -> {
+                navigateToDeviceSettings()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     private fun navigateToReports() {
         currentImei?.let { imei ->
-            val deviceName = arguments?.getString("name") ?: "Device"
             findNavController().navigate(
                 R.id.action_dashboard_to_reports,
-                bundleOf("IMEI" to imei, "name" to deviceName)
+                bundleOf("IMEI" to imei, "name" to currentDeviceName)
             )
         } ?: showErrorState("Cannot navigate to reports: IMEI is null")
     }
 
-    // ✅ Updated to use custom styled popup menu
+    private fun navigateToDeviceSettings() {
+        currentImei?.let { imei ->
+            findNavController().navigate(
+                R.id.action_dashboard_to_device_settings,
+                bundleOf("IMEI" to imei, "name" to currentDeviceName)
+            )
+        } ?: showErrorState("Cannot navigate to reports: IMEI is null")
+    }
+
+    // ✅ Updated to pass name to chart fragments
+    private fun navigateToChart(chartDestination: Int) {
+        currentImei?.let { imei ->
+            findNavController().navigate(
+                chartDestination,
+                bundleOf("IMEI" to imei, "name" to currentDeviceName)
+            )
+        } ?: showErrorState("Cannot navigate to chart: IMEI is null")
+    }
+
     private fun showCustomChartsMenu() {
         val inflater = requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView = inflater.inflate(R.layout.custom_charts_menu_layout, null)
@@ -204,7 +231,6 @@ class DashboardFragment : Fragment() {
         popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.popup_menu_background))
         popupWindow.elevation = 8f
 
-        // Find menu items and set click listeners
         val tempChart = popupView.findViewById<View>(R.id.menu_temperature_chart)
         val doorChart = popupView.findViewById<View>(R.id.menu_door_chart)
         val batteryChart = popupView.findViewById<View>(R.id.menu_battery_chart)
@@ -213,31 +239,22 @@ class DashboardFragment : Fragment() {
             navigateToChart(R.id.navigation_temperature_chart)
             popupWindow.dismiss()
         }
-
         doorChart.setOnClickListener {
             navigateToChart(R.id.navigation_door_history_chart)
             popupWindow.dismiss()
         }
-
         batteryChart.setOnClickListener {
             navigateToChart(R.id.navigation_battery_chart)
             popupWindow.dismiss()
         }
 
-        // Show popup anchored to the view (you might need to adjust positioning)
+
         val anchorView = requireView()
         popupWindow.showAsDropDown(anchorView, 0, -anchorView.height)
     }
 
-    // Extension function to convert dp to px
     private fun Int.dpToPx(): Int {
         return (this * resources.displayMetrics.density).toInt()
-    }
-
-    private fun navigateToChart(chartDestination: Int) {
-        currentImei?.let { imei ->
-            findNavController().navigate(chartDestination, bundleOf("IMEI" to imei))
-        } ?: showErrorState("Cannot navigate to chart: IMEI is null")
     }
 
     override fun onDestroyView() {

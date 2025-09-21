@@ -18,14 +18,58 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iie.st10089153.fragments.ProfileFragment
 import com.iie.st10089153.txdevsystems_app.databinding.ActivityMainBinding
+import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnitsApi
 import com.iie.st10089153.txdevsystems_app.ui.device.DeviceSettingsFragment
 import com.iie.st10089153.txdevsystems_app.ui.login.LoginActivity
+import android.os.Handler
+import android.os.Looper
 
 class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChangeListener {
+
+    private val logoutTime: Long = 5 * 60 * 1000 // 5 minutes
+    private val handler = Handler(Looper.getMainLooper())
+    private val logoutRunnable = Runnable {
+        //Clear saved session/token first
+        getSharedPreferences("auth_prefs", MODE_PRIVATE)
+            .edit()
+            .clear()
+            .apply()
+
+        //Navigate back to LoginActivity
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        // Reset the timer on user activity
+        resetLogoutTimer()
+    }
+
+    private fun resetLogoutTimer() {
+        handler.removeCallbacks(logoutRunnable)
+        handler.postDelayed(logoutRunnable, logoutTime)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Optional: stop the timer if app goes background
+        handler.removeCallbacks(logoutRunnable)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Restart timer when coming back
+        resetLogoutTimer()
+    }
 
     private lateinit var binding: ActivityMainBinding
 
     private var isInEditMode = false // Track edit mode state
+    private lateinit var api: AvailableUnitsApi
+    var currentUnitName: String? = null // cache name after fetch
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +113,7 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
 
         // 🔹 Handle toolbar visibility & actions based on destination
         navController.addOnDestinationChangedListener { _, destination, arguments ->
+            val deviceName = arguments?.getString("name") ?: currentUnitName ?: "Device"
             when (destination.id) {
                 R.id.navigation_home -> {
                     binding.topNav.visibility = View.GONE
@@ -78,7 +123,7 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
                 R.id.navigation_notifications -> {
                     binding.topNav.visibility = View.VISIBLE
                     binding.topNavBackButton.visibility = View.VISIBLE
-                    binding.topNavTitle.text = "Settings"
+                    binding.topNavTitle.text = "Notifications"
                     binding.topNavRightButton.visibility = View.GONE
                     isInEditMode = false
                 }
@@ -107,7 +152,7 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
                 R.id.navigation_dashboard -> {
                     binding.topNav.visibility = View.VISIBLE
                     binding.topNavBackButton.visibility = View.VISIBLE
-                    binding.topNavTitle.text = "Dashboard"
+                    binding.topNavTitle.text = "$deviceName Dashboard"
                     binding.topNavRightButton.visibility = View.VISIBLE
                     binding.topNavRightButton.setImageResource(R.drawable.ic_settings)
                     isInEditMode = false
@@ -121,7 +166,7 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
                 R.id.navigation_device_settings -> {
                     binding.topNav.visibility = View.VISIBLE
                     binding.topNavBackButton.visibility = View.VISIBLE
-                    binding.topNavTitle.text = "Device Settings"
+                    binding.topNavTitle.text = "$deviceName Settings"
                     binding.topNavRightButton.visibility = View.VISIBLE
                     binding.topNavRightButton.setImageResource(R.drawable.ic_edit)
                     isInEditMode = false
@@ -149,7 +194,7 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
                 R.id.navigation_reports -> {
                     binding.topNav.visibility = View.VISIBLE
                     binding.topNavBackButton.visibility = View.VISIBLE
-                    binding.topNavTitle.text = "Data Report"
+                    binding.topNavTitle.text = "$deviceName Report"
                     binding.topNavRightButton.visibility = View.GONE
                     isInEditMode = false
                 }
@@ -158,7 +203,7 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
                 R.id.navigation_temperature_chart -> {
                     binding.topNav.visibility = View.VISIBLE
                     binding.topNavBackButton.visibility = View.VISIBLE
-                    binding.topNavTitle.text = "Temperature Chart"
+                    binding.topNavTitle.text = "$deviceName Temperature Chart"
                     binding.topNavRightButton.visibility = View.GONE
                     isInEditMode = false
                 }
@@ -167,7 +212,7 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
                 R.id.navigation_door_history_chart -> {
                     binding.topNav.visibility = View.VISIBLE
                     binding.topNavBackButton.visibility = View.VISIBLE
-                    binding.topNavTitle.text = "Door History"
+                    binding.topNavTitle.text = "$deviceName Door History"
                     binding.topNavRightButton.visibility = View.GONE
                     isInEditMode = false
                 }
@@ -176,7 +221,7 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
                 R.id.navigation_battery_chart -> {
                     binding.topNav.visibility = View.VISIBLE
                     binding.topNavBackButton.visibility = View.VISIBLE
-                    binding.topNavTitle.text = "Battery Chart"
+                    binding.topNavTitle.text = "$deviceName Battery Chart"
                     binding.topNavRightButton.visibility = View.GONE
                     isInEditMode = false
                 }
@@ -332,24 +377,32 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
     override fun onEditModeChanged(isEditMode: Boolean) {
         this.isInEditMode = isEditMode
 
+        val deviceName = currentUnitName ?: "Device"
+
         if (isEditMode) {
             // Entering edit mode
             binding.topNavRightButton.visibility = View.GONE // Hide edit button
-            binding.topNavTitle.text = "Edit Device" // Change title
-            // Keep back button visible (it was already visible)
+            binding.topNavTitle.text = "$deviceName Edit" // Dynamic title
+            // Back button stays visible
         } else {
             // Exiting edit mode (back to view mode)
             binding.topNavRightButton.visibility = View.VISIBLE // Show edit button
             binding.topNavRightButton.setImageResource(R.drawable.ic_edit) // Ensure correct icon
-            binding.topNavTitle.text = "Device Settings" // Reset title
-            // Keep back button visible (it should stay visible)
+            binding.topNavTitle.text = "$deviceName Settings" // Dynamic title
+            // Back button stays visible
         }
     }
+
 
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
+    //nav text
+    fun setTopNavTitle(name: String) {
+        binding.topNavTitle.text = name
     }
 
 }
