@@ -13,15 +13,22 @@ import androidx.core.os.bundleOf
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.iie.st10089153.txdevsystems_app.databinding.ActivityMainBinding
 import com.iie.st10089153.txdevsystems_app.ui.login.LoginActivity
+import android.os.Handler
+import android.os.Looper
+
 
 class MainActivity : AppCompatActivity() {
 
-    // inactivity timeout in milliseconds (e.g. 5 min = 300000)
-    private val logoutTime: Long = 5 * 60 * 1000
+    private val logoutTime: Long = 5 * 60 * 1000 // 5 minutes
     private val handler = Handler(Looper.getMainLooper())
     private val logoutRunnable = Runnable {
-        // Clear user session here
-        // For example, clear token and navigate to login screen
+        //Clear saved session/token first
+        getSharedPreferences("auth_prefs", MODE_PRIVATE)
+            .edit()
+            .clear()
+            .apply()
+
+        //Navigate back to LoginActivity
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
@@ -88,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        // 🔹 Handle toolbar visibility & actions based on destination
+        //Handle toolbar visibility & actions based on destination
         navController.addOnDestinationChangedListener { _, destination, arguments ->
             when (destination.id) {
                 R.id.navigation_home -> {
@@ -113,7 +120,7 @@ class MainActivity : AppCompatActivity() {
                     binding.topNavRightButton.visibility = View.VISIBLE
                     binding.topNavRightButton.setImageResource(R.drawable.ic_settings)
 
-                    // 🔹 Show popup menu when clicking the settings icon
+                    //Show popup menu when clicking the settings icon
                     binding.topNavRightButton.setOnClickListener { view ->
                         val popup = PopupMenu(this, view)
                         popup.menuInflater.inflate(R.menu.dashboard_settings_menu, popup.menu)
@@ -191,7 +198,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 🔹 Back button action
+        //Back button action
         binding.topNavBackButton.setOnClickListener {
             navController.navigateUp()
         }
