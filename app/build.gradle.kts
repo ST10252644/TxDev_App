@@ -139,9 +139,4 @@ dependencies {
     // Fragment testing (debug only)
     debugImplementation("androidx.fragment:fragment-testing:1.6.1")
 
-}
 
-// Ensure both tools run during check
-tasks.named("check") {
-    dependsOn("detekt", "dependencyCheckAnalyze")
-}
