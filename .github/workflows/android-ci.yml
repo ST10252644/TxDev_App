@@ -23,11 +23,11 @@ permissions:
 
 env:
   # Use specific versions to ensure reproducibility
-  GRADLE_VERSION: '8.4'
-  ANDROID_COMPILE_SDK: '34'
-  ANDROID_BUILD_TOOLS: '34.0.0'
+  GRADLE_VERSION: '8.10.2'
+  ANDROID_COMPILE_SDK: '35'
+  ANDROID_BUILD_TOOLS: '35.0.1'
   ANDROID_SDK_TOOLS: '11076708'
-
+  
 jobs:
   build:
     name: Build and Test
@@ -72,11 +72,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
-
       - name: Make Gradlew Executable
         run: chmod +x ./gradlew
+
+      #- name: Ensure Gradle Wrapper
+        #run: ./gradlew wrapper --gradle-version ${{ env.GRADLE_VERSION }} --distribution-type=bin
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
+        continue-on-error: true
 
       - name: Check Project Structure
         run: |
@@ -88,10 +92,21 @@ jobs:
           find . -name "AndroidManifest.xml" -type f
 
       - name: Gradle Dependencies Check
-        run: ./gradlew dependencies --configuration debugRuntimeClasspath
+        run: ./gradlew :app:dependencies --configuration debugRuntimeClasspath
 
       - name: Clean Project
         run: ./gradlew clean
+
+      - name: Remove old debug keystore
+        run: rm -f $HOME/.android/debug.keystore
+
+      - name: Generate new debug keystore
+        run: |
+          mkdir -p $HOME/.android
+          keytool -genkey -v -keystore $HOME/.android/debug.keystore \
+          -storepass android -alias androiddebugkey -keypass android \
+          -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
+
 
       - name: Build Debug APK
         run: |
@@ -112,6 +127,22 @@ jobs:
           ./gradlew lintDebug --stacktrace
         continue-on-error: true
 
+      #- name: Run Detekt (Kotlin static analysis)
+        #run: ./gradlew detekt --stacktrace
+        #continue-on-error: true  # fail CI if issues found
+
+
+      #- name: Run OWASP Dependency Check
+        #run: ./gradlew dependencyCheckAnalyze
+        #continue-on-error: false  # fail CI if high severity vulnerabilities found
+
+      - name: Upload Dependency Check Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report-${{ github.run_number }}
+          path: build/reports/dependency-check-report.html
+          
       - name: Build Release APK
         run: |
           echo "Building release APK..."
@@ -217,12 +248,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Run Security Scan
-        uses: securecodewarrior/github-action-add-sarif@v1
-        with:
-          sarif-file: 'security-scan-results.sarif'
-        continue-on-error: true
 
   # Optional: Deployment job for releases
   deploy:

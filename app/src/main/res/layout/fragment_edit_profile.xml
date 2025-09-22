@@ -3,38 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1a1a1a"
+    android:background="@color/black_background"
     android:orientation="vertical">
-
-    <!-- Header with back button and title -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
-
-        <ImageView
-            android:id="@+id/btnBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_back"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="4dp"
-            app:tint="#ffffff" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Edit Profile Details"
-            android:textColor="#ffffff"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginEnd="28dp" />
-
-    </LinearLayout>
 
     <!-- ScrollView for form content -->
     <ScrollView
@@ -61,9 +31,11 @@
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:text="Username"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -76,18 +48,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@android:color/transparent"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#888888"
                         android:hint="Enter username"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="0dp"
-                        android:paddingBottom="8dp"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
 
                 </LinearLayout>
 
@@ -105,9 +77,11 @@
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:text="First Name"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -120,18 +94,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@android:color/transparent"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#888888"
                         android:hint="Enter first name"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="0dp"
-                        android:paddingBottom="8dp"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
 
                 </LinearLayout>
 
@@ -149,9 +122,11 @@
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:text="Last Name"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -164,18 +139,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@android:color/transparent"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#888888"
                         android:hint="Enter last name"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="0dp"
-                        android:paddingBottom="8dp"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
 
                 </LinearLayout>
 
@@ -193,9 +168,11 @@
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:text="Cell Number"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -208,19 +185,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@android:color/transparent"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#888888"
                         android:hint="Enter cell number"
                         android:inputType="phone"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="0dp"
-                        android:paddingBottom="8dp"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
 
                 </LinearLayout>
 
@@ -238,9 +215,11 @@
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:text="Email"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -253,19 +232,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@android:color/transparent"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#888888"
                         android:hint="Enter email"
                         android:inputType="textEmailAddress"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="0dp"
-                        android:paddingBottom="8dp"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
 
                 </LinearLayout>
 
@@ -283,9 +262,11 @@
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:text="Phone Number"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -298,19 +279,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@android:color/transparent"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#888888"
                         android:hint="Enter phone number"
                         android:inputType="phone"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="0dp"
-                        android:paddingBottom="8dp"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
 
                 </LinearLayout>
 
@@ -328,9 +309,11 @@
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:text="Address"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -343,18 +326,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@android:color/transparent"
-                        android:textColor="#ffffff"
-                        android:textColorHint="#888888"
                         android:hint="Enter address"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="0dp"
-                        android:paddingBottom="8dp"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
 
                 </LinearLayout>
 
@@ -372,9 +354,11 @@
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:text="Account created"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/text"
                     android:textSize="16sp"
-                    android:layout_marginEnd="16dp" />
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -387,15 +371,18 @@
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:gravity="center_vertical"
-                        android:textColor="#888888"
-                        android:textSize="16sp"
                         android:text="2025-06-25 15:55:29"
-                        android:paddingBottom="8dp" />
+                        android:textColor="@color/uneditable"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#333333" />
+                        android:background="@color/uneditable" />
 
                 </LinearLayout>
 
@@ -411,16 +398,19 @@
         android:layout_height="wrap_content"
         android:padding="24dp">
 
+
         <Button
             android:id="@+id/btnSaveChanges"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@drawable/save_button_background"
+            android:layout_height="60dp"
             android:text="Save Changes"
+            android:backgroundTint="#B8ED55"
             android:textColor="#000000"
-            android:textSize="16sp"
             android:textStyle="bold"
-            android:elevation="2dp" />
+            app:cornerRadius="2dp"
+            android:elevation="2dp"
+            android:fontFamily="@font/poppinssemibold"
+            app:layout_constraintHorizontal_bias="1.0"/>
 
     </LinearLayout>
 

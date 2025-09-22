@@ -108,11 +108,11 @@ class HomeFragment : Fragment() {
                 call: Call<List<AvailableUnit>>,
                 response: Response<List<AvailableUnit>>
             ) {
+                binding.swipeRefreshHome.isRefreshing = false // ✅ stop spinner
+
                 if (response.isSuccessful && response.body() != null) {
                     val units = response.body()!!
-
                     if (units.isNotEmpty()) {
-                        // Create sectioned list
                         val sectionedItems = SectionedDeviceAdapter.createSectionedList(units)
                         binding.deviceRecyclerView.adapter = SectionedDeviceAdapter(sectionedItems)
                     } else {
@@ -124,10 +124,12 @@ class HomeFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<List<AvailableUnit>>, t: Throwable) {
+                binding.swipeRefreshHome.isRefreshing = false // stop spinner even on error
                 Toast.makeText(requireContext(), "Error: ${t.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         })
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
