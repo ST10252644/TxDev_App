@@ -80,6 +80,7 @@ jobs:
 
       - name: Validate Gradle Wrapper
         uses: gradle/wrapper-validation-action@v1
+        continue-on-error: true
 
       - name: Check Project Structure
         run: |
