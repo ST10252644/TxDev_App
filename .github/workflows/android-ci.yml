@@ -97,24 +97,15 @@ jobs:
       - name: Clean Project
         run: ./gradlew clean
 
-      - name: Setup debug keystore (from secret)
-        shell: bash
+      - name: Remove old debug keystore
+        run: rm -f $HOME/.android/debug.keystore
+
+      - name: Generate new debug keystore
         run: |
           mkdir -p $HOME/.android
-          echo "$DEBUG_KEYSTORE_B64" | base64 -D > $HOME/.android/debug.keystore || \
-          echo "$DEBUG_KEYSTORE_B64" | base64 --decode > $HOME/.android/debug.keystore
-          chmod 600 $HOME/.android/debug.keystore
-          echo "Keystore written to:"
-          ls -l $HOME/.android/debug.keystore
-
-          # Also write to app/build/debug.keystore in case your signingConfig points there
-          mkdir -p $GITHUB_WORKSPACE/app/build
-          echo "${DEBUG_KEYSTORE_B64}" | base64 --decode > $GITHUB_WORKSPACE/app/build/debug.keystore
-          chmod 600 $GITHUB_WORKSPACE/app/build/debug.keystore
-
-          echo "Keystore written to:"
-          ls -l $HOME/.android/debug.keystore || true
-          ls -l $GITHUB_WORKSPACE/app/build/debug.keystore || true
+          keytool -genkey -v -keystore $HOME/.android/debug.keystore \
+          -storepass android -alias androiddebugkey -keypass android \
+          -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
 
 
       - name: Build Debug APK
