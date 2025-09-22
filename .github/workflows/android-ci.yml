@@ -118,6 +118,22 @@ jobs:
           ./gradlew lintDebug --stacktrace
         continue-on-error: true
 
+      - name: Run Detekt (Kotlin static analysis)
+        run: ./gradlew detekt --stacktrace
+        continue-on-error: false  # fail CI if issues found
+
+
+      - name: Run OWASP Dependency Check
+        run: ./gradlew dependencyCheckAnalyze
+        continue-on-error: false  # fail CI if high severity vulnerabilities found
+
+      - name: Upload Dependency Check Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report-${{ github.run_number }}
+          path: build/reports/dependency-check-report.html
+          
       - name: Build Release APK
         run: |
           echo "Building release APK..."
