@@ -72,11 +72,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
-
       - name: Make Gradlew Executable
         run: chmod +x ./gradlew
+
+      - name: Ensure Gradle Wrapper
+        run: ./gradlew wrapper --gradle-version ${{ env.GRADLE_VERSION }} --distribution-type=bin
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/wrapper-validation-action@v1
 
       - name: Check Project Structure
         run: |
