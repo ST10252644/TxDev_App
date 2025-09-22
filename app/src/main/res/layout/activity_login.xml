@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-
-
     <!-- Login title -->
     <TextView
         android:id="@+id/loginTitle"
@@ -21,7 +19,6 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/logoImage" />
-
 
     <!-- Login subtitle -->
     <TextView
@@ -37,7 +34,6 @@
         app:layout_constraintTop_toBottomOf="@id/loginTitle" />
 
     <!-- Logo -->
-    <!-- Username Title -->
     <ImageView
         android:id="@+id/logoImage"
         android:layout_width="320dp"
@@ -61,6 +57,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/logoImage" />
 
+    <!-- Username Title -->
     <TextView
         android:id="@+id/usernameTitle"
         android:layout_width="wrap_content"
@@ -84,6 +81,8 @@
         android:layout_marginTop="8dp"
         android:hint="Username"
         android:inputType="text"
+        android:imeOptions="actionNext"
+        android:maxLines="1"
         android:textColor="#FFFFFF"
         android:textColorHint="#777777"
         android:paddingHorizontal="16dp"
@@ -125,6 +124,8 @@
             android:background="@drawable/edittext_border"
             android:hint="Password"
             android:inputType="textPassword"
+            android:imeOptions="actionDone"
+            android:maxLines="1"
             android:paddingHorizontal="16dp"
             android:textColor="#FFFFFF"
             android:textColorHint="#777777"/>
@@ -145,10 +146,24 @@
         android:layout_width="350dp"
         android:layout_height="1dp"
         android:background="#555555"
-        app:layout_constraintBottom_toTopOf="@+id/loginButton"
+        app:layout_constraintBottom_toTopOf="@+id/progressBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+
+    <!--  PROGRESS BAR - Added here between divider and login button -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"
+        android:indeterminateTint="#B8ED55"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/logoDivider1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/loginButton" />
 
     <!-- Login Button -->
     <Button
@@ -156,7 +171,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:backgroundTint="#B8ED55"
         android:text="Login"
@@ -166,6 +181,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frameLayout" />
+        app:layout_constraintTop_toBottomOf="@id/progressBar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
