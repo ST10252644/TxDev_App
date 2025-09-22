@@ -27,15 +27,10 @@ android {
 
     signingConfigs {
         getByName("debug") {
-            val keystoreFile = File(System.getProperty("user.home"), ".android/debug.keystore")
-            if (keystoreFile.exists()) {
-                storeFile = keystoreFile
-                storePassword = "android"
-                keyAlias = "androiddebugkey"
-                keyPassword = "android"
-            } else {
-                println("Local debug keystore not found, relying on default Android Studio generation.")
-            }
+            storeFile = File(System.getProperty("user.home"), ".android/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
         }
     }
 
