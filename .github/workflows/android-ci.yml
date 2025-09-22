@@ -249,12 +249,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Run Security Scan
-        uses: securecodewarrior/github-action-add-sarif@v1
-        with:
-          sarif-file: 'security-scan-results.sarif'
-        continue-on-error: true
-
   # Optional: Deployment job for releases
   deploy:
     name: Deploy to Play Store
