@@ -99,11 +99,12 @@ jobs:
       - name: Setup debug keystore (from secret)
         shell: bash
         run: |
-          echo "Restoring debug keystore from secret..."
-          # Ensure .android folder exists and write keystore there (Android Studio default)
           mkdir -p $HOME/.android
-          echo "${DEBUG_KEYSTORE_B64}" | base64 --decode > $HOME/.android/debug.keystore
+          echo "$DEBUG_KEYSTORE_B64" | base64 -D > $HOME/.android/debug.keystore || \
+          echo "$DEBUG_KEYSTORE_B64" | base64 --decode > $HOME/.android/debug.keystore
           chmod 600 $HOME/.android/debug.keystore
+          echo "Keystore written to:"
+          ls -l $HOME/.android/debug.keystore
 
           # Also write to app/build/debug.keystore in case your signingConfig points there
           mkdir -p $GITHUB_WORKSPACE/app/build
