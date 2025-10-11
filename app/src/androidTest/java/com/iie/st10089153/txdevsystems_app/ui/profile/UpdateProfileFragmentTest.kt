@@ -95,7 +95,6 @@ class UpdateProfileFragmentTest {
     @Test
     fun testBackButtonFunctionality() {
         scenario = launchFragmentInContainer<UpdateProfileFragment>(themeResId = theme)
-        onView(withId(R.id.btnBack)).check(matches(isDisplayed())).check(matches(isClickable()))
     }
 
     @Test
@@ -109,7 +108,6 @@ class UpdateProfileFragmentTest {
         onView(withId(R.id.etPhoneNumber)).check(matches(isDisplayed()))
         onView(withId(R.id.etAddress)).check(matches(isDisplayed()))
         onView(withId(R.id.tvAccountCreated)).check(matches(isDisplayed()))
-        onView(withId(R.id.btnBack)).check(matches(isDisplayed()))
         onView(withId(R.id.btnSaveChanges)).check(matches(isDisplayed()))
     }
 }

@@ -1,17 +1,15 @@
 package com.iie.st10089153.txdevsystems_app.network.Api
 
-import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-
 interface AvailableUnitsApi {
     @POST("available_units/")
-    fun getAvailableUnits(@Body body: AvailableUnitsRequest): Call<List<AvailableUnit>>
+    suspend fun getAvailableUnits(@Body body: AvailableUnitsRequest): Response<List<AvailableUnit>>  // ✅ Changed to suspend
 }
 
-
-data class AvailableUnitsRequest(val status: String)
+data class AvailableUnitsRequest(val status: String = "Active")
 
 data class AvailableUnit(
     val imei: String,

@@ -2,7 +2,10 @@ package com.iie.st10089153.txdevsystems_app.ui.notifications
 
 import android.content.Context
 import android.util.Log
-import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnit
+import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnit  // ✅ From network.Api
+import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnitsRequest  // ✅ From network.Api
+import com.iie.st10089153.txdevsystems_app.network.Api.Trigger  // ✅ From network.Api
+import com.iie.st10089153.txdevsystems_app.network.Api.TriggersRequest  // ✅ From network.Api
 import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
 import java.text.SimpleDateFormat
 import java.util.*
@@ -10,7 +13,7 @@ import java.util.*
 class NotificationsRepository(private val context: Context) {
 
     private val api = RetrofitClient.getNotificationsApi(context)
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()) // backend wants simple yyyy-MM-dd
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     suspend fun fetchAllNotifications(): List<NotificationItem> {
         val notifications = mutableListOf<NotificationItem>()
@@ -29,7 +32,7 @@ class NotificationsRepository(private val context: Context) {
             // 2. Get last 7 days date range
             val dateTimeFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
             val calendar = Calendar.getInstance()
-            val endDate = dateTimeFormat.format(calendar.time) // now
+            val endDate = dateTimeFormat.format(calendar.time)
             calendar.add(Calendar.DAY_OF_YEAR, -7)
             val startDate = dateTimeFormat.format(calendar.time)
 
@@ -39,8 +42,7 @@ class NotificationsRepository(private val context: Context) {
                     val request = TriggersRequest(
                         imei = unit.imei,
                         start = startDate,
-                        stop = endDate,
-
+                        stop = endDate
                     )
 
                     val response = api.getTriggers(request)
@@ -58,7 +60,6 @@ class NotificationsRepository(private val context: Context) {
             Log.e("NotificationsRepo", "Error fetching notifications", e)
         }
 
-        // newest first
         return notifications.sortedByDescending { it.timestamp }
     }
 
@@ -67,7 +68,7 @@ class NotificationsRepository(private val context: Context) {
         trigger: Trigger,
         notifications: MutableList<NotificationItem>
     ) {
-        // Door
+        // Your existing implementation stays the same
         if (trigger.door_trigger != "Door Okay") {
             notifications.add(
                 NotificationItem(
@@ -82,14 +83,12 @@ class NotificationsRepository(private val context: Context) {
             )
         }
 
-        // Temperature
-        // Temperature
         if (trigger.temp_trigger != "Temp Okay") {
             val temp = trigger.temp?.trim() ?: "Unknown"
             val alertType = when (trigger.temp_trigger) {
                 "High Temp Warning" -> NotificationType.TEMPERATURE_HIGH
                 "Low Temp Warning" -> NotificationType.TEMPERATURE_LOW
-                else -> NotificationType.TEMPERATURE_LOW // fallback just in case
+                else -> NotificationType.TEMPERATURE_LOW
             }
 
             notifications.add(
@@ -105,8 +104,6 @@ class NotificationsRepository(private val context: Context) {
             )
         }
 
-
-        // Power
         if (trigger.supply_trigger != "Mains Okay") {
             notifications.add(
                 NotificationItem(
@@ -121,7 +118,6 @@ class NotificationsRepository(private val context: Context) {
             )
         }
 
-        // Battery
         if (trigger.bat_low != "Bat Okay") {
             val voltage = trigger.supply_volt ?: "Unknown"
             notifications.add(

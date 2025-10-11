@@ -66,7 +66,7 @@ class ReportsFragment : Fragment() {
             adapter.updateData(data)
         }
 
-        vm.loading.observe(viewLifecycleOwner) { isLoading ->
+        vm.isLoading.observe(viewLifecycleOwner) { isLoading ->  // ✅ Changed from loading
             // Show/hide refresh button loading state
             binding.btnRefresh.isEnabled = !isLoading
         }

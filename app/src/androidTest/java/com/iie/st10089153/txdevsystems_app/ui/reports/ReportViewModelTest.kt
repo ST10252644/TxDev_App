@@ -28,14 +28,14 @@ class ReportViewModelSimpleTest {
     fun viewModelInitializesCorrectly() {
         assertNotNull(viewModel)
         assertNotNull(viewModel.reportData)
-        assertNotNull(viewModel.loading)
+        assertNotNull(viewModel.isLoading)
         assertNotNull(viewModel.error)
     }
 
     @Test
     fun initialStateIsCorrect() {
         // Check initial values
-        assertEquals(false, viewModel.loading.value)
+        assertEquals(false, viewModel.isLoading.value)
         assertEquals(null, viewModel.error.value)
         assertTrue(viewModel.reportData.value?.isEmpty() ?: true)
     }

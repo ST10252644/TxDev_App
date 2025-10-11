@@ -7,7 +7,7 @@ import java.io.File
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-
+    id("kotlin-kapt")  // ✅ ADD THIS - Required for Room
     id("io.gitlab.arturbosch.detekt")
     id("org.owasp.dependencycheck")
 }
@@ -33,7 +33,6 @@ android {
             keyPassword = "android"
         }
     }
-
 
     buildTypes {
         getByName("debug") {
@@ -136,6 +135,22 @@ dependencies {
     // Java 8+ desugaring
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
+    // ========================================
+    // ✅ ROOM DATABASE - ADD THESE LINES
+    // ========================================
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+
+    // Room testing support
+    androidTestImplementation("androidx.room:room-testing:$room_version")
+
+    // ✅ ADD Google Truth for better assertions in tests
+    testImplementation("com.google.truth:truth:1.1.5")
+    androidTestImplementation("com.google.truth:truth:1.1.5")
+    // ========================================
+
     // ---- Testing dependencies - aligned versions ----
     // Force consistent androidx.test:core version across all configurations
     implementation("androidx.test:core:1.6.1")
@@ -143,7 +158,6 @@ dependencies {
     // ---- Local unit tests (src/test) ----
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.robolectric:robolectric:4.12.2")
-    //testImplementation("androidx.test:core:1.6.1")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
@@ -163,9 +177,7 @@ dependencies {
 
     // Fragment testing (debug only)
     debugImplementation("androidx.fragment:fragment-testing:1.6.1")
-
 }
-
 
 // Ensure both tools run during check
 tasks.named("check") {
