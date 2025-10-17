@@ -2,6 +2,7 @@ package com.iie.st10089153.txdevsystems_app.ui.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.iie.st10089153.txdevsystems_app.MainActivity
 import com.iie.st10089153.txdevsystems_app.R
@@ -31,6 +32,11 @@ class LoginActivity : AppCompatActivity() {
         passwordInput = findViewById(R.id.passwordInput)
         togglePasswordButton = findViewById(R.id.btnTogglePassword)
 
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+
         loginButton.setOnClickListener {
             val username = usernameInput.text.toString().trim()
             val password = passwordInput.text.toString().trim()
@@ -56,7 +62,7 @@ class LoginActivity : AppCompatActivity() {
             passwordInput.setSelection(passwordInput.text.length) // move cursor to end
         }
     }
-
+////////////////////Performing the login
     private fun performLogin(username: String, password: String) {
         val call = RetrofitClient.getAuthApi(this).login(username = username, password = password)
 
@@ -84,7 +90,7 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
-
+////Saving the token
     private fun saveToken(token: String) {
         val sharedPref = getSharedPreferences("auth_prefs", MODE_PRIVATE)
         sharedPref.edit()

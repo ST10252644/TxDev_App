@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.iie.st10089153.txdevsystems_app.databinding.FragmentHomeBinding
 import com.iie.st10089153.txdevsystems_app.network.Api.AccountResponse
@@ -14,6 +15,7 @@ import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnit
 import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnitsRequest
 import com.iie.st10089153.txdevsystems_app.network.Api.LookupAccountRequest
 import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -68,9 +70,9 @@ class HomeFragment : Fragment() {
         }
     }
 
-   
 
-      
+
+
 
 
     private fun loadUserInfo() {
@@ -100,19 +102,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun loadDevices() {
-        val api = RetrofitClient.getAvailableUnitsApi(requireContext())
-        val call = api.getAvailableUnits(AvailableUnitsRequest(status = "All"))
+        lifecycleScope.launch {
+            try {
+                val api = RetrofitClient.getAvailableUnitsApi(requireContext())
+                val response = api.getAvailableUnits(AvailableUnitsRequest(status = "All"))
 
-        call.enqueue(object : Callback<List<AvailableUnit>> {
-            override fun onResponse(
-                call: Call<List<AvailableUnit>>,
-                response: Response<List<AvailableUnit>>
-            ) {
+                binding.swipeRefreshHome.isRefreshing = false
+
                 if (response.isSuccessful && response.body() != null) {
                     val units = response.body()!!
-
                     if (units.isNotEmpty()) {
-                        // Create sectioned list
                         val sectionedItems = SectionedDeviceAdapter.createSectionedList(units)
                         binding.deviceRecyclerView.adapter = SectionedDeviceAdapter(sectionedItems)
                     } else {
@@ -121,13 +120,13 @@ class HomeFragment : Fragment() {
                 } else {
                     Toast.makeText(requireContext(), "Failed to load devices", Toast.LENGTH_SHORT).show()
                 }
+            } catch (e: Exception) {
+                binding.swipeRefreshHome.isRefreshing = false
+                Toast.makeText(requireContext(), "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
-
-            override fun onFailure(call: Call<List<AvailableUnit>>, t: Throwable) {
-                Toast.makeText(requireContext(), "Error: ${t.localizedMessage}", Toast.LENGTH_LONG).show()
-            }
-        })
+        }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

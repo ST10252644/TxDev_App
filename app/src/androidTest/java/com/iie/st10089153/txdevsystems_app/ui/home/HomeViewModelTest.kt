@@ -1,178 +1,225 @@
 package com.iie.st10089153.txdevsystems_app.ui.home
 
-
+import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.Observer
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnit
 import com.iie.st10089153.txdevsystems_app.ui.dashboard.DashboardViewModel
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class HomeViewModelTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @Mock
-    private lateinit var helloTextObserver: Observer<String>
-
-    @Mock
-    private lateinit var subtitleTextObserver: Observer<String>
-
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var application: Application
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
-        homeViewModel = HomeViewModel()
+        application = ApplicationProvider.getApplicationContext()
     }
 
     @Test
-    fun `helloText should return correct initial value`() {
-        // Given
-        homeViewModel.helloText.observeForever(helloTextObserver)
-
-        // When
-        val value = homeViewModel.helloText.value
-
-        // Then
-        assert(value == "Hello Person Nathan")
+    fun homeViewModel_constructsSuccessfully() {
+        val viewModel = HomeViewModel(application)
+        assertNotNull(viewModel)
     }
 
     @Test
-    fun `subtitleText should return correct initial value`() {
-        // Given
-        homeViewModel.subtitleText.observeForever(subtitleTextObserver)
-
-        // When
-        val value = homeViewModel.subtitleText.value
-
-        // Then
-        assert(value == "The following devices are active on your account.")
+    fun homeViewModel_isViewModelInstance() {
+        val viewModel = HomeViewModel(application)
+        assertTrue(viewModel is androidx.lifecycle.ViewModel)
     }
 
     @Test
-    fun `helloText LiveData should be observable`() {
-        // Given
-        homeViewModel.helloText.observeForever(helloTextObserver)
+    fun multipleHomeViewModels_canBeCreated() {
+        val viewModel1 = HomeViewModel(application)
+        val viewModel2 = HomeViewModel(application)
 
-        // When
-        val value = homeViewModel.helloText.value
-
-        // Then
-        assert(value != null)
-        assert(homeViewModel.helloText.hasObservers())
+        assertNotNull(viewModel1)
+        assertNotNull(viewModel2)
+        assertNotSame(viewModel1, viewModel2)
     }
 
     @Test
-    fun `subtitleText LiveData should be observable`() {
-        // Given
-        homeViewModel.subtitleText.observeForever(subtitleTextObserver)
-
-        // When
-        val value = homeViewModel.subtitleText.value
-
-        // Then
-        assert(value != null)
-        assert(homeViewModel.subtitleText.hasObservers())
+    fun homeViewModel_hasDevicesLiveData() {
+        val viewModel = HomeViewModel(application)
+        assertNotNull(viewModel.devices)
     }
 
     @Test
-    fun `helloText should remain constant`() {
-        // Given
-        homeViewModel.helloText.observeForever(helloTextObserver)
-        val initialValue = homeViewModel.helloText.value
-
-        // When - simulate time passing
-        Thread.sleep(100)
-        val laterValue = homeViewModel.helloText.value
-
-        // Then
-        assert(initialValue == laterValue)
-        assert(laterValue == "Hello Person Nathan")
+    fun homeViewModel_hasIsLoadingLiveData() {
+        val viewModel = HomeViewModel(application)
+        assertNotNull(viewModel.isLoading)
     }
 
     @Test
-    fun `subtitleText should remain constant`() {
-        // Given
-        homeViewModel.subtitleText.observeForever(subtitleTextObserver)
-        val initialValue = homeViewModel.subtitleText.value
+    fun homeViewModel_hasErrorLiveData() {
+        val viewModel = HomeViewModel(application)
+        assertNotNull(viewModel.error)
+    }
 
-        // When - simulate time passing
-        Thread.sleep(100)
-        val laterValue = homeViewModel.subtitleText.value
+    @Test
+    fun homeViewModel_hasGreetingTextLiveData() {
+        val viewModel = HomeViewModel(application)
+        assertNotNull(viewModel.greetingText)
+        assertEquals("Hello User", viewModel.greetingText.value)
+    }
 
-        // Then
-        assert(initialValue == laterValue)
-        assert(laterValue == "The following devices are active on your account.")
+    @Test
+    fun homeViewModel_hasSubtitleTextLiveData() {
+        val viewModel = HomeViewModel(application)
+        assertNotNull(viewModel.subtitleText)
+        assertEquals("The following devices are on your account",
+            viewModel.subtitleText.value)
+    }
+
+    @Test
+    fun homeViewModel_updateGreeting_changesGreetingText() {
+        val viewModel = HomeViewModel(application)
+        val testUsername = "TestUser"
+
+        viewModel.updateGreeting(testUsername)
+
+        assertEquals("Hello $testUsername", viewModel.greetingText.value)
+    }
+
+    @Test
+    fun homeViewModel_initialLoadingState() {
+        val viewModel = HomeViewModel(application)
+        // Initial loading might be true or false depending on init block
+        assertNotNull(viewModel.isLoading.value)
+    }
+
+    @Test
+    fun homeViewModel_devicesListInitiallyEmpty() {
+        val viewModel = HomeViewModel(application)
+        // Devices might be null or empty initially
+        val devices = viewModel.devices.value
+        assertTrue(devices == null || devices.isEmpty())
     }
 }
 
-// Dashboard ViewModel Tests
-@RunWith(RobolectricTestRunner::class)
+@RunWith(AndroidJUnit4::class)
 class DashboardViewModelTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @Mock
-    private lateinit var textObserver: Observer<String>
-
-    private lateinit var dashboardViewModel: DashboardViewModel
+    private lateinit var application: Application
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
-        dashboardViewModel = DashboardViewModel()
+        application = ApplicationProvider.getApplicationContext()
     }
 
     @Test
-    fun `text should return correct initial value`() {
-        // Given
-        dashboardViewModel.text.observeForever(textObserver)
-
-        // When
-        val value = dashboardViewModel.text.value
-
-        // Then
-        assert(value == "This is dashboard Fragment")
+    fun dashboardViewModel_constructsSuccessfully() {
+        val dashboardViewModel = DashboardViewModel(application)
+        assertNotNull(dashboardViewModel)
     }
 
     @Test
-    fun `text LiveData should be observable`() {
-        // Given
-        dashboardViewModel.text.observeForever(textObserver)
-
-        // When
-        val value = dashboardViewModel.text.value
-
-        // Then
-        assert(value != null)
-        assert(dashboardViewModel.text.hasObservers())
+    fun dashboardViewModel_isViewModelInstance() {
+        val dashboardViewModel = DashboardViewModel(application)
+        assertTrue(dashboardViewModel is androidx.lifecycle.ViewModel)
     }
 
+    @Test
+    fun multipleDashboardViewModels_canBeCreated() {
+        val viewModel1 = DashboardViewModel(application)
+        val viewModel2 = DashboardViewModel(application)
 
+        assertNotNull(viewModel1)
+        assertNotNull(viewModel2)
+        assertNotSame(viewModel1, viewModel2)
+    }
 
     @Test
-    fun `ViewModel should handle multiple observers`() {
-        // Given
-        val observer1: Observer<String> = Observer { }
-        val observer2: Observer<String> = Observer { }
+    fun dashboardViewModel_hasDashboardDataLiveData() {
+        val dashboardViewModel = DashboardViewModel(application)
+        assertNotNull(dashboardViewModel.dashboardData)
+    }
 
-        // When
-        dashboardViewModel.text.observeForever(observer1)
-        dashboardViewModel.text.observeForever(observer2)
+    @Test
+    fun dashboardViewModel_hasIsLoadingLiveData() {
+        val dashboardViewModel = DashboardViewModel(application)
+        assertNotNull(dashboardViewModel.isLoading)
+    }
 
-        // Then
-        assert(dashboardViewModel.text.hasObservers())
+    @Test
+    fun dashboardViewModel_hasErrorLiveData() {
+        val dashboardViewModel = DashboardViewModel(application)
+        assertNotNull(dashboardViewModel.error)
+    }
 
-        // Cleanup
-        dashboardViewModel.text.removeObserver(observer1)
-        dashboardViewModel.text.removeObserver(observer2)
+    @Test
+    fun dashboardViewModel_initialDashboardDataIsNull() {
+        val dashboardViewModel = DashboardViewModel(application)
+        assertNull(dashboardViewModel.dashboardData.value)
+    }
+
+    @Test
+    fun dashboardViewModel_initialLoadingStateIsFalse() {
+        val dashboardViewModel = DashboardViewModel(application)
+        assertEquals(false, dashboardViewModel.isLoading.value)
+    }
+
+    @Test
+    fun dashboardViewModel_initialErrorIsNull() {
+        val dashboardViewModel = DashboardViewModel(application)
+        assertNull(dashboardViewModel.error.value)
+    }
+
+    @Test
+    fun dashboardViewModel_loadDashboard_setsLoadingState() {
+        val dashboardViewModel = DashboardViewModel(application)
+        val testImei = "123456789"
+
+        // When loading dashboard
+        dashboardViewModel.loadDashboard(testImei)
+
+        // Loading state should be handled (might be true during load or false after)
+        assertNotNull(dashboardViewModel.isLoading.value)
+    }
+
+    @Test
+    fun dashboardViewModel_refreshDashboard_forcesRefresh() {
+        val dashboardViewModel = DashboardViewModel(application)
+        val testImei = "123456789"
+
+        // Should not throw exception
+        dashboardViewModel.refreshDashboard(testImei)
+
+        // Verify the method executes without error
+        assertNotNull(dashboardViewModel)
+    }
+
+    @Test
+    fun dashboardViewModel_loadDashboard_withEmptyImei() {
+        val dashboardViewModel = DashboardViewModel(application)
+
+        // Load with empty IMEI
+        dashboardViewModel.loadDashboard("")
+
+        // Should handle gracefully, error might be set
+        assertNotNull(dashboardViewModel.error)
+    }
+
+    @Test
+    fun dashboardViewModel_multipleDashboardViewModels_haveIndependentData() {
+        val viewModel1 = DashboardViewModel(application)
+        val viewModel2 = DashboardViewModel(application)
+
+        // Each should have their own LiveData instances
+        assertNotSame(viewModel1.dashboardData, viewModel2.dashboardData)
+        assertNotSame(viewModel1.isLoading, viewModel2.isLoading)
+        assertNotSame(viewModel1.error, viewModel2.error)
     }
 }

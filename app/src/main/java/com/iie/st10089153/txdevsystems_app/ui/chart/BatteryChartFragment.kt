@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -27,7 +28,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class BatteryChartFragment : Fragment() {
-
     private val vm: BatteryChartViewModel by viewModels()
     private lateinit var chart: LineChart
     private lateinit var datePill: TextView
@@ -45,6 +45,7 @@ class BatteryChartFragment : Fragment() {
         chart.defaultStyle()
         return v
     }
+    /////////////Error message
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val imei = resolveImeiFlexible()
@@ -58,13 +59,20 @@ class BatteryChartFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 vm.ui.collectLatest { ui ->
-                    ui.error?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show() }
+                    ui.error?.let {
+                        Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                    }
                     if (ui.points.isNotEmpty()) bindChart(ui.points)
-                    datePill.text = ui.day.toString()
+
+                    // Update date pill text based on window type
                     if (ui.window == RangeWindow.CUSTOM && ui.startIso != null && ui.stopIso != null) {
-                        rangeLabel.text = "${prettyIsoDate(ui.startIso)} → ${prettyIsoDate(ui.stopIso)}"
-                    } else if (rangeLabel.text.isNullOrBlank()) {
-                        rangeLabel.text = "—"
+                        datePill.text = "${prettyIsoDate(ui.startIso)} → ${prettyIsoDate(ui.stopIso)}"
+                        rangeLabel.text = "" // Hide range label when custom date is shown in pill
+                    } else {
+                        datePill.text = ui.day.toString()
+                        if (rangeLabel.text.isNullOrBlank()) {
+                            rangeLabel.text = ""
+                        }
                     }
                     styleToggle()
                 }
@@ -88,7 +96,8 @@ class BatteryChartFragment : Fragment() {
             styleToggle()
         }
 
-        datePill.setOnClickListener {
+        // Create date picker functionality
+        val datePickerFunction = {
             val picker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Select date range")
                 .build()
@@ -96,19 +105,21 @@ class BatteryChartFragment : Fragment() {
                 val start = isoStartOfDay(sel.first!!)
                 val stop = isoEndOfDay(sel.second!!)
                 vm.fetchRange(requireContext(), imei, start, stop)
-                rangeLabel.text = "${prettyIsoDate(start)} → ${prettyIsoDate(stop)}"
                 toggle.clearChecked()
                 styleToggle()
             }
             picker.show(parentFragmentManager, "range_battery")
         }
+
+        // Add click listeners to both text and calendar icon
+        datePill.setOnClickListener { datePickerFunction() }
+        view.findViewById<ImageView>(R.id.ivCalendarBattery).setOnClickListener { datePickerFunction() }
     }
 
     private fun bindChart(points: List<com.iie.st10089153.txdevsystems_app.network.Api.RangePoint>) {
         val labels = dateLabels(points)
         val bat = points.mapIndexed { i, p -> Entry(i.toFloat(), p.bat_volt.toFloatOrNaN()) }
         val supply = points.mapIndexed { i, p -> Entry(i.toFloat(), p.supply_volt.toFloatOrNaN()) }
-
         val purple = ContextCompat.getColor(requireContext(), R.color.battery_purple)
         val green = ContextCompat.getColor(requireContext(), R.color.supply_green)
 
@@ -124,8 +135,8 @@ class BatteryChartFragment : Fragment() {
                 return if (i in labels.indices) labels[i] else ""
             }
         }
-        chart.xAxis.labelCount = labels.size.coerceAtMost(8)
 
+        chart.xAxis.labelCount = labels.size.coerceAtMost(8)
         val white = ContextCompat.getColor(requireContext(), R.color.white)
         chart.xAxis.textColor = white
         chart.axisLeft.textColor = white
@@ -144,10 +155,19 @@ class BatteryChartFragment : Fragment() {
             requireView().findViewById<MaterialButton>(R.id.btnWeek),
             requireView().findViewById<MaterialButton>(R.id.btnMonth)
         )
+
         btns.forEach { btn ->
             val checked = (toggle.checkedButtonId == btn.id)
             btn.backgroundTintList = ColorStateList.valueOf(if (checked) green else transparent)
             btn.setTextColor(if (checked) black else white)
         }
+    }
+
+    //  ADD THIS METHOD
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Clean up chart to prevent memory leaks
+        chart.clear()
+        chart.invalidate()
     }
 }

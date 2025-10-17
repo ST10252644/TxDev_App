@@ -30,27 +30,15 @@ class ViewProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupClickListeners()
         fetchUserProfile()
     }
 
-    private fun setupClickListeners() {
-        binding.btnBack.setOnClickListener {
-            if (parentFragmentManager.backStackEntryCount > 0) {
-                parentFragmentManager.popBackStack()
-            } else {
-                requireActivity().onBackPressed()
-            }
-        }
-
-        binding.btnEdit.setOnClickListener {
-            val editProfileFragment = UpdateProfileFragment()
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.profile_fragment_container, editProfileFragment)
-                .addToBackStack("ViewProfile")
-                .commit()
-        }
+    override fun onResume() {
+        super.onResume()
+        // Refresh profile data when returning from edit mode
+        fetchUserProfile()
     }
+
 
     private fun fetchUserProfile() {
         val api = RetrofitClient.getProfileApi(requireContext())

@@ -1,10 +1,58 @@
+<!-- values/themes.xml -->
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Main app theme -->
     <style name="Theme.TxDevSystems_App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="colorPrimary">@color/purple_200</item>
+
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/green_success</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/black</item>
+
+        <!-- Secondary colors -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Surface colors (affects BottomNavigationView background) -->
+        <item name="colorSurface">@color/tertiary</item>
+
+
+        <!-- Status and navigation bar -->
+        <item name="android:statusBarColor">@color/black_background</item>
+        <item name="android:navigationBarColor">@color/black_background</item>
+
+        <!-- BottomNavigationView specific colors -->
+        <item name="bottomNavigationStyle">@style/CustomBottomNavigation</item>
+    </style>
+
+    <!-- Custom BottomNavigationView style -->
+    <style name="CustomBottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/tertiary</item>
+        <item name="backgroundTint">@color/tertiary</item>
+        <item name="itemIconTint">@color/bottom_nav_color_state</item>
+        <item name="itemTextColor">@color/bottom_nav_color_state</item>
+    </style>
+
+    <!-- Splash theme -->
+    <style name="Theme.TxDevSystems_App.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Disable automatic splash screen (Android 12+) -->
+        <item name="android:windowSplashScreenBackground" tools:targetApi="s">@color/black_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@drawable/logo</item>
+        <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="s">0</item>
+
+        <!-- Your existing splash background -->
+        <item name="android:windowBackground">@color/black_background</item>
+
+        <!-- Remove default window animations -->
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+
+        <!-- Colors -->
+        <item name="colorPrimary">@color/green_success</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorSecondary">@color/teal_200</item>

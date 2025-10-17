@@ -33,6 +33,5 @@ class DeviceSettingsFragmentTest {
         onView(withId(R.id.etDoorAlertTime)).check(matches(isDisplayed()))
         onView(withId(R.id.spinnerDoorType)).check(matches(isDisplayed()))
         onView(withId(R.id.btnSaveChanges)).check(matches(isDisplayed()))
-        onView(withId(R.id.btnBack)).check(matches(isDisplayed()))
     }
 }

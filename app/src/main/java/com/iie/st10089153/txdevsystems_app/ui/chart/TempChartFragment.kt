@@ -1,9 +1,11 @@
 package com.iie.st10089153.txdevsystems_app.ui.chart
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -17,6 +19,8 @@ import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.iie.st10089153.txdevsystems_app.R
 import kotlinx.coroutines.flow.collectLatest
@@ -24,12 +28,12 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class TempChartFragment : Fragment() {
-
     private val vm: TempChartViewModel by viewModels()
     private lateinit var chart: LineChart
     private lateinit var datePill: TextView
     private lateinit var title: TextView
     private lateinit var rangeLabel: TextView
+    private lateinit var toggle: MaterialButtonToggleGroup
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,6 +45,8 @@ class TempChartFragment : Fragment() {
         datePill = v.findViewById(R.id.btnSelectDateTemp)
         title = v.findViewById(R.id.tvScreenTitle)
         rangeLabel = v.findViewById(R.id.tvRangeLabel)
+        toggle = v.findViewById(R.id.toggleRange)
+
         chart.defaultStyle()
         return v
     }
@@ -59,30 +65,57 @@ class TempChartFragment : Fragment() {
                 vm.ui.collectLatest { ui ->
                     ui.error?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show() }
                     if (ui.points.isNotEmpty()) bindChart(ui.points)
-                    datePill.text = ui.day.toString()
+
+                    // Update date pill text based on window type
                     if (ui.window == RangeWindow.CUSTOM && ui.startIso != null && ui.stopIso != null) {
-                        rangeLabel.text = "${prettyIsoDate(ui.startIso)}  →  ${prettyIsoDate(ui.stopIso)}"
-                    } else if (rangeLabel.text.isNullOrBlank()) {
-                        rangeLabel.text = "—"
+                        datePill.text = "${prettyIsoDate(ui.startIso)} → ${prettyIsoDate(ui.stopIso)}"
+                        rangeLabel.text = "" // hide separate label when custom
+                    } else {
+                        datePill.text = ui.day.toString()
+                        if (rangeLabel.text.isNullOrBlank()) rangeLabel.text = ""
                     }
+
+                    styleToggle()
                 }
             }
         }
 
+        // Initial load = Month
         vm.fetch(requireContext(), imei, LocalDate.now(), RangeWindow.MONTH)
+        toggle.check(R.id.btnMonth)
+        styleToggle()
 
-        datePill.setOnClickListener {
+        // Toggle listeners
+        toggle.addOnButtonCheckedListener { _, id, checked ->
+            if (!checked) return@addOnButtonCheckedListener
+            val win = when (id) {
+                R.id.btnDay -> RangeWindow.DAY
+                R.id.btnWeek -> RangeWindow.WEEK
+                else -> RangeWindow.MONTH
+            }
+            vm.fetch(requireContext(), imei, vm.ui.value.day, win)
+            rangeLabel.text = "—"
+            styleToggle()
+        }
+
+        // Date range picker (clears pills -> CUSTOM)
+        val datePickerFunction = {
             val picker = MaterialDatePicker.Builder.dateRangePicker()
                 .setTitleText("Select date range")
                 .build()
             picker.addOnPositiveButtonClickListener { selection ->
                 val start = isoStartOfDay(selection.first!!)
-                val stop  = isoEndOfDay(selection.second!!)
+                val stop = isoEndOfDay(selection.second!!)
                 vm.fetchRange(requireContext(), imei, start, stop)
-                rangeLabel.text = "${prettyIsoDate(start)}  →  ${prettyIsoDate(stop)}"
+                toggle.clearChecked()
+                styleToggle()
             }
             picker.show(parentFragmentManager, "range_temp")
         }
+
+        // Click both pill text + calendar icon
+        datePill.setOnClickListener { datePickerFunction() }
+        view.findViewById<ImageView>(R.id.ivCalendarBattery2).setOnClickListener { datePickerFunction() }
     }
 
     private fun bindChart(points: List<com.iie.st10089153.txdevsystems_app.network.Api.RangePoint>) {
@@ -91,8 +124,8 @@ class TempChartFragment : Fragment() {
         val maxE = points.mapIndexed { i, p -> Entry(i.toFloat(), p.temp_max.toFloatOrNaN()) }
         val nowE = points.mapIndexed { i, p -> Entry(i.toFloat(), p.temp_now.toFloatOrNaN()) }
 
-        val green  = ContextCompat.getColor(requireContext(), R.color.min_temp_green)
-        val red    = ContextCompat.getColor(requireContext(), R.color.max_temp_red)
+        val green = ContextCompat.getColor(requireContext(), R.color.min_temp_green)
+        val red = ContextCompat.getColor(requireContext(), R.color.max_temp_red)
         val purple = ContextCompat.getColor(requireContext(), R.color.actual_temp_purple)
 
         chart.data = LineData(
@@ -101,18 +134,44 @@ class TempChartFragment : Fragment() {
             ds(nowE, "Actual Temp", purple)
         )
 
-        // Safe formatter (works across MPAndroidChart versions)
         chart.xAxis.valueFormatter = object : ValueFormatter() {
             override fun getAxisLabel(value: Float, axis: AxisBase?): String {
                 val i = value.toInt()
                 return if (i in labels.indices) labels[i] else ""
             }
         }
-        chart.xAxis.labelCount = labels.size.coerceAtMost(8)
 
+        chart.xAxis.labelCount = labels.size.coerceAtMost(8)
         val white = ContextCompat.getColor(requireContext(), R.color.white)
         chart.xAxis.textColor = white
         chart.axisLeft.textColor = white
+        chart.invalidate()
+    }
+
+    /** Make selected Day/Week/Month appear green (same as Battery/Door) */
+    private fun styleToggle() {
+        val green = ContextCompat.getColor(requireContext(), R.color.tx_green)
+        val transparent = ContextCompat.getColor(requireContext(), android.R.color.transparent)
+        val white = ContextCompat.getColor(requireContext(), android.R.color.white)
+        val black = ContextCompat.getColor(requireContext(), android.R.color.black)
+
+        val btns = listOf(
+            requireView().findViewById<MaterialButton>(R.id.btnDay),
+            requireView().findViewById<MaterialButton>(R.id.btnWeek),
+            requireView().findViewById<MaterialButton>(R.id.btnMonth)
+        )
+
+        btns.forEach { btn ->
+            val checked = (toggle.checkedButtonId == btn.id)
+            btn.backgroundTintList = ColorStateList.valueOf(if (checked) green else transparent)
+            btn.setTextColor(if (checked) black else white)
+        }
+    }
+    //  ADD THIS METHOD
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Clean up chart to prevent memory leaks
+        chart.clear()
         chart.invalidate()
     }
 }
