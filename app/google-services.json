@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "499599382875",
+    "project_id": "tms-txdevsytsem",
+    "storage_bucket": "tms-txdevsytsem.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499599382875:android:9e38992d4ae1260f5ce27e",
+        "android_client_info": {
+          "package_name": "com.iie.st10089153.txdevsystems_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB22d5qsMyxubpRQvKgF3x6rHQxWONj-GA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

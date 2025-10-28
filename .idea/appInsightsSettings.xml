@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.iie.st10089153.txdevsystems_app" />
+                  <option name="mobileSdkAppId" value="1:499599382875:android:9e38992d4ae1260f5ce27e" />
+                  <option name="projectId" value="tms-txdevsytsem" />
+                  <option name="projectNumber" value="499599382875" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
