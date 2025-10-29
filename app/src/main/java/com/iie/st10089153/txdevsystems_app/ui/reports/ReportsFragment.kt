@@ -59,6 +59,11 @@ class ReportsFragment : Fragment() {
 
         // Set initial button states
         setActiveButton(binding.btnDay)
+
+        // Setup SwipeRefreshLayout
+        binding.swipeRefresh.setOnRefreshListener {
+            refreshCurrentData()
+        }
     }
 
     private fun setupObservers() {
@@ -67,8 +72,8 @@ class ReportsFragment : Fragment() {
         }
 
         vm.loading.observe(viewLifecycleOwner) { isLoading ->
-            // Show/hide refresh button loading state
-            binding.btnRefresh.isEnabled = !isLoading
+            // Control SwipeRefreshLayout loading state
+            binding.swipeRefresh.isRefreshing = isLoading
         }
 
         vm.error.observe(viewLifecycleOwner) { errorMessage ->
@@ -96,10 +101,6 @@ class ReportsFragment : Fragment() {
 
         binding.btnCustomDate.setOnClickListener {
             showDateRangePicker()
-        }
-
-        binding.btnRefresh.setOnClickListener {
-            refreshCurrentData()
         }
     }
 
