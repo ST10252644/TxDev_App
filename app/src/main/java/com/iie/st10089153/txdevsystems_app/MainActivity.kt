@@ -27,6 +27,7 @@ import com.iie.st10089153.txdevsystems_app.network.Api.NotificationsApi
 import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
 import com.iie.st10089153.txdevsystems_app.ui.device.DeviceSettingsFragment
 import com.iie.st10089153.txdevsystems_app.ui.login.LoginActivity
+import com.iie.st10089153.txdevsystems_app.utils.SessionManager
 import android.os.Handler
 import android.os.Looper
 import kotlinx.coroutines.CoroutineScope
@@ -38,16 +39,17 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
 
     private val logoutTime: Long = 5 * 60 * 1000
     private val handler = Handler(Looper.getMainLooper())
-    private val logoutRunnable = Runnable {
-        getSharedPreferences("auth_prefs", MODE_PRIVATE)
-            .edit()
-            .clear()
-            .apply()
+    private lateinit var sessionManager: SessionManager
 
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
+    private val logoutRunnable = Runnable {
+        if (!sessionManager.isRememberMeEnabled()) {
+            sessionManager.clearAutoLogout()
+
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
     }
 
     override fun onUserInteraction() {
@@ -62,12 +64,16 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
 
     override fun onPause() {
         super.onPause()
-        handler.removeCallbacks(logoutRunnable)
+        if (!sessionManager.isRememberMeEnabled()) {
+            handler.removeCallbacks(logoutRunnable)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        resetLogoutTimer()
+        if (!sessionManager.isRememberMeEnabled()) {
+            resetLogoutTimer()
+        }
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -80,9 +86,9 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val sharedPref = getSharedPreferences("auth_prefs", MODE_PRIVATE)
-        val token = sharedPref.getString("access_token", null)
-        if (token.isNullOrEmpty()) {
+        sessionManager = SessionManager(this)
+
+        if (!sessionManager.isLoggedIn()) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
@@ -303,6 +309,15 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
                 }
             }
         }
+    }
+
+    fun performLogout() {
+        sessionManager.logout()
+
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
     private fun showCustomPopupMenu(view: View, currentImei: String?) {
