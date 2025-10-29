@@ -6,38 +6,6 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-
-
-    <!-- Login title -->
-    <TextView
-        android:id="@+id/loginTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="40dp"
-        android:text="Login"
-        android:textColor="#FFFFFF"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logoImage" />
-
-
-    <!-- Login subtitle -->
-    <TextView
-        android:id="@+id/loginSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="4dp"
-        android:text="Login to an existing account"
-        android:textColor="#AAAAAA"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/loginTitle" />
-
-    <!-- Logo -->
-    <!-- Username Title -->
     <ImageView
         android:id="@+id/logoImage"
         android:layout_width="320dp"
@@ -50,7 +18,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Horizontal line below logo -->
     <View
         android:id="@+id/logoDivider"
         android:layout_width="350dp"
@@ -60,6 +27,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/logoImage" />
+
+    <TextView
+        android:id="@+id/loginTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="40dp"
+        android:text="Login"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logoDivider" />
+
+    <TextView
+        android:id="@+id/loginSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="4dp"
+        android:text="Login to an existing account"
+        android:textColor="#AAAAAA"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/loginTitle" />
 
     <TextView
         android:id="@+id/usernameTitle"
@@ -74,7 +66,6 @@
         app:layout_constraintTop_toBottomOf="@id/loginSubtitle"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- Username Input -->
     <EditText
         android:id="@+id/usernameInput"
         android:layout_width="0dp"
@@ -92,7 +83,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Password Title -->
     <TextView
         android:id="@+id/passwordTitle"
         android:layout_width="wrap_content"
@@ -106,7 +96,6 @@
         app:layout_constraintTop_toBottomOf="@id/usernameInput"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- Password container -->
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="0dp"
@@ -140,23 +129,36 @@
             android:src="@drawable/ic_visibility_off"/>
     </FrameLayout>
 
+    <CheckBox
+        android:id="@+id/rememberMeCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:buttonTint="#B8ED55"
+        android:minHeight="48dp"
+        android:text="Remember Me"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/frameLayout" />
+
     <View
         android:id="@+id/logoDivider1"
         android:layout_width="350dp"
         android:layout_height="1dp"
+        android:layout_marginTop="16dp"
         android:background="#555555"
-        app:layout_constraintBottom_toTopOf="@+id/loginButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/rememberMeCheckbox" />
 
-    <!-- Login Button -->
     <Button
         android:id="@+id/loginButton"
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
         android:backgroundTint="#B8ED55"
         android:text="Login"
@@ -164,8 +166,7 @@
         android:textStyle="bold"
         app:cornerRadius="12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/frameLayout" />
+        app:layout_constraintTop_toBottomOf="@id/logoDivider1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
