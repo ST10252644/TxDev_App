@@ -10,6 +10,7 @@ import androidx.core.os.bundleOf
 import androidx.recyclerview.widget.GridLayoutManager
 import com.iie.st10089153.txdevsystems_app.R
 import com.iie.st10089153.txdevsystems_app.databinding.FragmentDashboardBinding
+import com.iie.st10089153.txdevsystems_app.network.Api.ConfigByImeiRequest
 import com.iie.st10089153.txdevsystems_app.network.Api.CurrentRequest
 import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
 import com.iie.st10089153.txdevsystems_app.ui.dashboard.models.GaugeCard
@@ -39,7 +40,7 @@ class DashboardFragment : Fragment() {
         Log.d("DashboardFragment", "onCreateView called")
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
 
-        // ✅ Read IMEI + Name from arguments
+        // Read IMEI + Name from arguments
         currentImei = arguments?.getString("IMEI")
         currentDeviceName = arguments?.getString("name") ?: "Device"
         val lastSeen = arguments?.getString("last_seen") ?: "--"
@@ -48,7 +49,7 @@ class DashboardFragment : Fragment() {
         // Set initial last refreshed text
         binding.tvLastRefreshed.text = "Last refreshed: $lastSeen"
 
-        // ✅ Set top nav title dynamically
+        // Set top nav title dynamically
         (requireActivity() as? MainActivity)?.apply {
             setTopNavTitle(currentDeviceName ?: "Device")
             currentUnitName = currentDeviceName // store globally so popup menus know what to show
@@ -64,6 +65,13 @@ class DashboardFragment : Fragment() {
         return binding.root
     }
 
+    // Reload data when returning to the dashboard
+    override fun onResume() {
+        super.onResume()
+        Log.d("DashboardFragment", "onResume called - reloading data")
+        currentImei?.let { loadDashboardItem(it) }
+    }
+
     private fun setupRecyclerView() {
         binding.gaugeRecyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.gaugeRecyclerView.adapter = GaugeAdapter(emptyList())
@@ -71,6 +79,7 @@ class DashboardFragment : Fragment() {
 
     private fun setupSwipeRefresh() {
         binding.swipeRefresh.setOnRefreshListener {
+            Log.d("DashboardFragment", "Swipe refresh triggered")
             currentImei?.let { loadDashboardItem(it) }
                 ?: run { binding.swipeRefresh.isRefreshing = false }
         }
@@ -102,6 +111,8 @@ class DashboardFragment : Fragment() {
     }
 
     private fun loadDashboardItem(imei: String) {
+        Log.d("DashboardFragment", "loadDashboardItem called for IMEI: $imei")
+
         // Show progress bar only if list is currently empty
         binding.progressBar.visibility =
             if ((binding.gaugeRecyclerView.adapter as GaugeAdapter).itemCount == 0) View.VISIBLE
@@ -109,14 +120,28 @@ class DashboardFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                val response = RetrofitClient.getDashboardApi(requireContext())
+                // Fetch BOTH current data AND config to get accurate temp ranges
+                val currentResponse = RetrofitClient.getDashboardApi(requireContext())
                     .getCurrent(CurrentRequest(imei))
 
-                if (response.isSuccessful) {
-                    val item = response.body()
-                    if (item == null) {
+                val configResponse = RetrofitClient.getDeviceApi(requireContext())
+                    .getConfigByImei(ConfigByImeiRequest(imei))
+
+                if (currentResponse.isSuccessful && configResponse.isSuccessful) {
+                    val item = currentResponse.body()
+                    val config = configResponse.body()
+
+                    if (item == null || config == null) {
                         showEmptyState()
                     } else {
+                        // Use config values for temp ranges (more accurate than current endpoint)
+                        val tempMin = config.temp_min?.toFloatOrNull() ?: item.temp_min.toFloat()
+                        val tempMax = config.temp_max?.toFloatOrNull() ?: item.temp_max.toFloat()
+
+                        Log.d("DashboardFragment", "Current endpoint - temp_now: ${item.temp_now}, temp_min: ${item.temp_min}, temp_max: ${item.temp_max}")
+                        Log.d("DashboardFragment", "Config endpoint - temp_min: ${config.temp_min}, temp_max: ${config.temp_max}")
+                        Log.d("DashboardFragment", "Using for gauge - temp_min: $tempMin, temp_max: $tempMax")
+
                         val gaugeList = listOf(
                             GaugeCard(
                                 iconRes = R.drawable.ic_power,
@@ -141,8 +166,8 @@ class DashboardFragment : Fragment() {
                                 name = "Temperature",
                                 measurement = "°C",
                                 gaugeImageRes = R.drawable.circle_placeholder,
-                                minValue = item.temp_min.toFloat(),
-                                maxValue = item.temp_max.toFloat(),
+                                minValue = tempMin,  // ✅ Use config value
+                                maxValue = tempMax,  // ✅ Use config value
                                 type = "temperature"
                             ),
                             GaugeCard(
@@ -156,10 +181,12 @@ class DashboardFragment : Fragment() {
 
                         binding.gaugeRecyclerView.adapter = GaugeAdapter(gaugeList)
                         showDashboard()
+                        Log.d("DashboardFragment", "Dashboard updated successfully with ${gaugeList.size} items")
                     }
                 } else {
-                    showErrorState("Error: ${response.code()}")
-                    Log.e("DashboardAPI", "Error: ${response.code()} - ${response.errorBody()?.string()}")
+                    val errorMsg = "Error: Current=${currentResponse.code()}, Config=${configResponse.code()}"
+                    showErrorState(errorMsg)
+                    Log.e("DashboardAPI", errorMsg)
                 }
             } catch (e: Exception) {
                 showErrorState("Failed to load: ${e.localizedMessage}")
@@ -207,7 +234,7 @@ class DashboardFragment : Fragment() {
         } ?: showErrorState("Cannot navigate to reports: IMEI is null")
     }
 
-    // ✅ Updated to pass name to chart fragments
+    // Updated to pass name to chart fragments
     private fun navigateToChart(chartDestination: Int) {
         currentImei?.let { imei ->
             findNavController().navigate(
