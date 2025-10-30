@@ -205,12 +205,12 @@
                 <TextView
                     android:layout_width="140dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:fontFamily="@font/poppinsmedium"
-                    android:letterSpacing="0.05"
                     android:text="Door Alert Time"
                     android:textColor="@color/text"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
 
                 <LinearLayout
                     android:layout_width="0dp"

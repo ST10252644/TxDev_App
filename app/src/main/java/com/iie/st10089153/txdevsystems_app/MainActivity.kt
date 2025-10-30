@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
 
         navView.setupWithNavController(navController)
 
-        // Add manual click listener to ensure proper highlighting
+        // Manual click listener to ensure proper highlighting
         navView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_home -> {
@@ -161,7 +161,6 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
                 R.id.navigation_home -> {
                     binding.topNav.visibility = View.GONE
                     isInEditMode = false
-
                 }
 
                 R.id.navigation_notifications -> {
@@ -275,6 +274,7 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
                 }
             }
         }
+
 
         binding.topNavBackButton.setOnClickListener {
             val fragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main)
