@@ -2,18 +2,18 @@ package com.iie.st10089153.txdevsystems_app.network
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.iie.st10089153.txdevsystems_app.network.Api.AuthApi
 import com.iie.st10089153.txdevsystems_app.network.Api.AvailableUnitsApi
 import com.iie.st10089153.txdevsystems_app.network.Api.DashboardApi
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import retrofit2.Retrofit
 
-@RunWith(RobolectricTestRunner::class)
-@Config(sdk = [28])
+@RunWith(AndroidJUnit4::class)
 class RetrofitClientTest {
 
     private lateinit var context: Context
@@ -24,126 +24,93 @@ class RetrofitClientTest {
     }
 
     @Test
-    fun `getInstance should return valid Retrofit instance`() {
-        // When
+    fun getInstance_returnsValidRetrofit() {
         val retrofit = RetrofitClient.getInstance(context)
-
-        // Then
-        assert(retrofit != null)
-        assert(retrofit is Retrofit)
-        assert(retrofit.baseUrl().toString().isNotEmpty())
+        // Type sanity
+        assertTrue("Instance is not Retrofit", retrofit is Retrofit)
+        // Base URL should exist
+        assertTrue("Base URL should not be empty", retrofit.baseUrl().toString().isNotEmpty())
     }
 
     @Test
-    fun `getInstance should return same instance for same context`() {
-        // When
+    fun getInstance_sameContext_sameBaseUrl() {
         val retrofit1 = RetrofitClient.getInstance(context)
         val retrofit2 = RetrofitClient.getInstance(context)
-
-        // Then
-        assert(retrofit1 != null)
-        assert(retrofit2 != null)
-        // Note: RetrofitClient creates new instances, so they won't be the same object
-        // But they should have the same base URL
-        assert(retrofit1.baseUrl() == retrofit2.baseUrl())
+        assertEquals(
+            "Base URLs should match for the same context",
+            retrofit1.baseUrl(),
+            retrofit2.baseUrl()
+        )
     }
 
     @Test
-    fun `getInstance should have correct base URL`() {
-        // When
+    fun getInstance_hasExpectedBaseUrl() {
         val retrofit = RetrofitClient.getInstance(context)
-
-        // Then
-        val baseUrl = retrofit.baseUrl().toString()
-        assert(baseUrl == "http://api.txdevsystems.co.za:65004/")
+        assertEquals("http://api.txdevsystems.co.za:65004/", retrofit.baseUrl().toString())
     }
 
     @Test
-    fun `getAuthApi should return valid AuthApi instance`() {
-        // When
+    fun getAuthApi_returnsProxyImplementingAuthApi() {
+        val api = RetrofitClient.getAuthApi(context)
+        // Retrofit returns a dynamic proxy that implements the interface
+        assertTrue(
+            "Returned object must implement AuthApi",
+            api.javaClass.interfaces.contains(AuthApi::class.java)
+        )
+    }
+
+    @Test
+    fun getAvailableUnitsApi_returnsProxyImplementingAvailableUnitsApi() {
+        val api = RetrofitClient.getAvailableUnitsApi(context)
+        assertTrue(
+            "Returned object must implement AvailableUnitsApi",
+            api.javaClass.interfaces.contains(AvailableUnitsApi::class.java)
+        )
+    }
+
+    @Test
+    fun getDashboardApi_returnsProxyImplementingDashboardApi() {
+        val api = RetrofitClient.getDashboardApi(context)
+        assertTrue(
+            "Returned object must implement DashboardApi",
+            api.javaClass.interfaces.contains(DashboardApi::class.java)
+        )
+    }
+
+    @Test
+    fun differentApis_implementDifferentInterfaces() {
         val authApi = RetrofitClient.getAuthApi(context)
+        val dashApi = RetrofitClient.getDashboardApi(context)
+        val availApi = RetrofitClient.getAvailableUnitsApi(context)
 
-        // Then
-        assert(authApi != null)
-        assert(authApi is AuthApi)
+        val authIfaces = authApi.javaClass.interfaces.toSet()
+        val dashIfaces = dashApi.javaClass.interfaces.toSet()
+        val availIfaces = availApi.javaClass.interfaces.toSet()
+
+        assertTrue("Auth vs Dashboard should differ", authIfaces != dashIfaces)
+        assertTrue("Dashboard vs Available should differ", dashIfaces != availIfaces)
+        assertTrue("Auth vs Available should differ", authIfaces != availIfaces)
     }
 
     @Test
-    fun `getAvailableUnitsApi should return valid AvailableUnitsApi instance`() {
-        // When
-        val availableUnitsApi = RetrofitClient.getAvailableUnitsApi(context)
-
-        // Then
-        assert(availableUnitsApi != null)
-        assert(availableUnitsApi is AvailableUnitsApi)
-    }
-
-    @Test
-    fun `getDashboardApi should return valid DashboardApi instance`() {
-        // When
-        val dashboardApi = RetrofitClient.getDashboardApi(context)
-
-        // Then
-        assert(dashboardApi != null)
-        assert(dashboardApi is DashboardApi)
-    }
-
-    @Test
-    fun `multiple calls should return different api instances`() {
-        // When
-        val authApi1 = RetrofitClient.getAuthApi(context)
-        val authApi2 = RetrofitClient.getAuthApi(context)
-
-        // Then
-        assert(authApi1 != null)
-        assert(authApi2 != null)
-        // Different instances but same type
-        assert(authApi1 is AuthApi)
-        assert(authApi2 is AuthApi)
-    }
-
-    @Test
-    fun `different api types should be different classes`() {
-        // When
-        val authApi = RetrofitClient.getAuthApi(context)
-        val dashboardApi = RetrofitClient.getDashboardApi(context)
-        val availableUnitsApi = RetrofitClient.getAvailableUnitsApi(context)
-
-        // Then
-        assert(authApi != null)
-        assert(dashboardApi != null)
-        assert(availableUnitsApi != null)
-
-        // All should be different classes
-        assert(authApi::class != dashboardApi::class)
-        assert(dashboardApi::class != availableUnitsApi::class)
-        assert(authApi::class != availableUnitsApi::class)
-    }
-
-    @Test
-    fun `retrofit instance should have gson converter factory`() {
-        // When
+    fun retrofit_hasGsonConverterFactory() {
         val retrofit = RetrofitClient.getInstance(context)
-
-        // Then
         val converterFactories = retrofit.converterFactories()
-        assert(converterFactories.isNotEmpty())
+        assertTrue("No converter factories installed", converterFactories.isNotEmpty())
 
-        // Check if GsonConverterFactory is present
-        val hasGsonConverter = converterFactories.any {
+        val hasGson = converterFactories.any {
             it.toString().contains("GsonConverterFactory", ignoreCase = true)
         }
-        assert(hasGsonConverter)
+        assertTrue("GsonConverterFactory not found on Retrofit", hasGson)
     }
 
     @Test
-    fun `retrofit instance should have okhttp client`() {
-        // When
+    fun retrofit_usesOkHttpClient() {
         val retrofit = RetrofitClient.getInstance(context)
-
-        // Then
         val callFactory = retrofit.callFactory()
-        assert(callFactory != null)
-        assert(callFactory.toString().contains("OkHttpClient", ignoreCase = true))
+        assertTrue(
+            "CallFactory should be OkHttpClient",
+            callFactory.toString().contains("OkHttpClient", ignoreCase = true)
+        )
     }
 }

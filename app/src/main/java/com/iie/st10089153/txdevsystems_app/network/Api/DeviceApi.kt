@@ -1,6 +1,8 @@
 package com.iie.st10089153.txdevsystems_app.network.Api
 
 import com.iie.st10089153.txdevsystems_app.ui.device.models.ConfigResponse
+import com.iie.st10089153.txdevsystems_app.ui.device.models.DoorAlarmMinRequest
+import com.iie.st10089153.txdevsystems_app.ui.device.models.SwitchPolarityRequest
 import com.iie.st10089153.txdevsystems_app.ui.device.models.TempThresholdRequest
 import retrofit2.Response
 import retrofit2.http.Body
@@ -36,4 +38,11 @@ interface DeviceApi {
 
     @PUT("/set_temp_thresholds/")
     suspend fun setTempThresholds(@Body body: TempThresholdRequest): Response<ConfigResponse>
+
+    @PUT("/set_door_alarm_min/")
+    suspend fun setDoorAlarmMin(@Body request: DoorAlarmMinRequest): Response<Unit>
+
+    @PUT("/set_switch_polarity/")
+    suspend fun setSwitchPolarity(@Body request: SwitchPolarityRequest): Response<Unit>
+
 }

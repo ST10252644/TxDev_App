@@ -13,11 +13,12 @@ import com.iie.st10089153.txdevsystems_app.R
 import com.iie.st10089153.txdevsystems_app.databinding.FragmentDeviceSettingsBinding
 import com.iie.st10089153.txdevsystems_app.network.Api.ConfigByImeiRequest
 import com.iie.st10089153.txdevsystems_app.network.Api.DeviceApi
-import com.iie.st10089153.txdevsystems_app.network.Api.UpdateConfigRequest
+import com.iie.st10089153.txdevsystems_app.network.Api.UpdateUnitNameRequest
 import com.iie.st10089153.txdevsystems_app.network.RetrofitClient
 import com.iie.st10089153.txdevsystems_app.ui.chart.resolveImeiFlexible
+import com.iie.st10089153.txdevsystems_app.ui.device.models.DoorAlarmMinRequest
+import com.iie.st10089153.txdevsystems_app.ui.device.models.SwitchPolarityRequest
 import com.iie.st10089153.txdevsystems_app.ui.device.models.TempThresholdRequest
-import com.iie.st10089153.txdevsystems_app.network.Api.UpdateUnitNameRequest
 import kotlinx.coroutines.launch
 
 class DeviceSettingsFragment : Fragment() {
@@ -25,13 +26,10 @@ class DeviceSettingsFragment : Fragment() {
     private var _binding: FragmentDeviceSettingsBinding? = null
     private val binding get() = _binding!!
     private lateinit var api: DeviceApi
-
     private var currentImei: String? = null
+    private var isEditMode = false
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentDeviceSettingsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -39,72 +37,104 @@ class DeviceSettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         api = RetrofitClient.getDeviceApi(requireContext())
-
-        // ✅ Flexible IMEI resolution
         currentImei = resolveImeiFlexible()
-        Log.d("DeviceSettingsFragment", "Received IMEI via flexible lookup: $currentImei")
 
         currentImei?.let { loadDeviceSettings(it) }
-            ?: run {
-                Log.e("DeviceSettingsFragment", "IMEI is null, cannot load settings")
-                Toast.makeText(requireContext(), "IMEI missing", Toast.LENGTH_SHORT).show()
-            }
+            ?: Toast.makeText(requireContext(), "IMEI missing", Toast.LENGTH_SHORT).show()
 
-        binding.btnBack.setOnClickListener { requireActivity().onBackPressed() }
+        setEditMode(false) // Start in view-only mode
         binding.btnSaveChanges.setOnClickListener { saveDeviceSettings() }
     }
 
+    // Toggle edit mode from MainActivity
+    fun toggleEditMode() {
+        isEditMode = !isEditMode
+        setEditMode(isEditMode)
+        notifyParentEditModeChanged()
+    }
+
+    // Set edit/view mode
+    fun setEditMode(enabled: Boolean) {
+        isEditMode = enabled
+        binding.etDeviceName.isEnabled = enabled
+        binding.etHighTemp.isEnabled = enabled
+        binding.etLowTemp.isEnabled = enabled
+        binding.etDoorAlertTime.isEnabled = enabled
+        binding.spinnerDoorType.isEnabled = enabled
+        binding.btnSaveChanges.visibility = if (enabled) View.VISIBLE else View.GONE
+
+        refreshDisplayForMode()
+        notifyParentEditModeChanged()
+    }
+
+    fun isInEditMode(): Boolean = isEditMode
+
+    private fun notifyParentEditModeChanged() {
+        (activity as? OnEditModeChangeListener)?.onEditModeChanged(isEditMode)
+    }
+
+    private fun refreshDisplayForMode() {
+        val maxTemp = binding.etHighTemp.text.toString().replace("°C", "").trim()
+        val minTemp = binding.etLowTemp.text.toString().replace("°C", "").trim()
+        val doorTime = binding.etDoorAlertTime.text.toString()
+            .replace(" minutes", "")
+            .replace(" minute", "")
+            .trim()
+
+        binding.etHighTemp.setText(if (isEditMode) maxTemp else "$maxTemp°C")
+        binding.etLowTemp.setText(if (isEditMode) minTemp else "$minTemp°C")
+
+        // Format door alert time properly
+        val minuteLabel = if (doorTime == "1") "minute" else "minutes"
+        binding.etDoorAlertTime.setText(if (isEditMode) doorTime else "$doorTime $minuteLabel")
+    }
+
     private fun loadDeviceSettings(imei: String) {
-        Log.d("DeviceSettingsFragment", "loadDeviceSettings called with IMEI: $imei")
         lifecycleScope.launch {
             try {
                 val response = api.getConfigByImei(ConfigByImeiRequest(imei))
                 if (response.isSuccessful) {
                     response.body()?.let { config ->
-
-                        // Device ID + Name
                         binding.tvDeviceID.text = config.imei
                         binding.etDeviceName.setText(config.unit_id)
 
-                        // Temps
-                        binding.etHighTemp.setText(config.temp_max ?: "")
-                        binding.etLowTemp.setText(config.temp_min ?: "")
+                        val maxTempText = config.temp_max ?: ""
+                        val minTempText = config.temp_min ?: ""
 
-                        // Door alert time
-                        val doorHour = config.door_alarm_hour ?: "0"
-                        val doorMin = config.door_alarm_min ?: "0"
-                        binding.etDoorAlertTime.setText("$doorHour:$doorMin")
+                        // Calculate total minutes from hours and minutes
+                        val doorHour = config.door_alarm_hour?.toIntOrNull() ?: 0
+                        val doorMin = config.door_alarm_min?.toIntOrNull() ?: 0
+                        val totalMinutes = (doorHour * 60) + doorMin
 
-                        // Spinner (make sure it's initialized before this)
-                        val spinnerOptions = listOf("NO", "NC")
-                        val adapter = ArrayAdapter(
-                            requireContext(),
-                            android.R.layout.simple_spinner_item,
-                            spinnerOptions
-                        )
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                        binding.spinnerDoorType.adapter = adapter
-
-                        // Map polarity (your API sends "0" or "1")
-                        val polarity = if (config.switch_polarity == "1") "NO" else "NC"
-                        val spinnerIndex = spinnerOptions.indexOf(polarity)
-                        if (spinnerIndex >= 0) {
-                            binding.spinnerDoorType.setSelection(spinnerIndex)
+                        // Format the display based on mode
+                        val minuteLabel = if (totalMinutes == 1) "minute" else "minutes"
+                        val doorTimeDisplay = if (isEditMode) {
+                            totalMinutes.toString()
+                        } else {
+                            "$totalMinutes $minuteLabel"
                         }
 
-                        Log.d("DeviceSettingsFragment", "Device config loaded successfully")
-                    } ?: Log.e("DeviceSettingsFragment", "Response body is null")
+                        binding.etHighTemp.setText(if (isEditMode) maxTempText else "$maxTempText°C")
+                        binding.etLowTemp.setText(if (isEditMode) minTempText else "$minTempText°C")
+                        binding.etDoorAlertTime.setText(doorTimeDisplay)
+
+                        val spinnerOptions = listOf("No Open", "No Close")
+                        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, spinnerOptions)
+                        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+                        binding.spinnerDoorType.adapter = adapter
+
+                        val polarity = if (config.switch_polarity == "1") "No Open" else "No Close"
+                        val spinnerIndex = spinnerOptions.indexOf(polarity)
+                        if (spinnerIndex >= 0) binding.spinnerDoorType.setSelection(spinnerIndex)
+                    }
                 } else {
-                    Log.e("DeviceSettingsFragment", "API call failed: ${response.code()}")
                     Toast.makeText(requireContext(), "Failed to load device settings", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Log.e("DeviceSettingsFragment", "Exception during API call: ${e.localizedMessage}", e)
                 Toast.makeText(requireContext(), "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         }
     }
-
 
     private fun saveDeviceSettings() {
         val imei = currentImei ?: run {
@@ -116,60 +146,46 @@ class DeviceSettingsFragment : Fragment() {
         val maxTemp = binding.etHighTemp.text.toString().toIntOrNull() ?: 0
         val minTemp = binding.etLowTemp.text.toString().toIntOrNull() ?: 0
 
-        // 1️⃣ Update unit name
-        val newNameRequest = UpdateUnitNameRequest(
-            imei = imei,
-            new_name = unitName
-        )
+        // Get total minutes entered by user
+        val totalMinutes = binding.etDoorAlertTime.text.toString()
+            .replace(" minutes", "")
+            .replace(" minute", "")
+            .trim()
+            .toIntOrNull() ?: 0
+
+        // Convert to hours and minutes for API
+        val doorHour = (totalMinutes / 60).toString()
+        val doorMin = (totalMinutes % 60).toString()
+
+        val switchPolarity = if (binding.spinnerDoorType.selectedItem.toString() == "No Open") "1" else "0"
 
         lifecycleScope.launch {
             try {
-                val responseName = api.updateUnitName(newNameRequest)
-                if (responseName.isSuccessful) {
-                    Log.d("DeviceSettingsFragment", "Unit name updated successfully")
-                } else {
-                    Log.e(
-                        "DeviceSettingsFragment",
-                        "Failed to update name: ${responseName.errorBody()?.string()}"
-                    )
-                }
-            } catch (e: Exception) {
-                Log.e("DeviceSettingsFragment", "Exception updating name: ${e.localizedMessage}", e)
-            }
-        }
+                api.updateUnitName(UpdateUnitNameRequest(imei, unitName))
+                api.setTempThresholds(TempThresholdRequest(imei, maxTemp, minTemp))
+                api.setDoorAlarmMin(DoorAlarmMinRequest(imei, doorMin))
+                // If your API also needs hours, you may need to call another endpoint or modify the request
+                api.setSwitchPolarity(SwitchPolarityRequest(imei, switchPolarity))
 
-        // 2️⃣ Update temperature thresholds
-        val tempRequest = TempThresholdRequest(
-            imei = imei,
-            max = maxTemp,
-            min = minTemp
-        )
+                Toast.makeText(requireContext(), "Device settings updated", Toast.LENGTH_SHORT).show()
 
-        lifecycleScope.launch {
-            try {
-                val responseTemp = api.setTempThresholds(tempRequest)
-                if (responseTemp.isSuccessful) {
-                    Log.d("DeviceSettingsFragment", "Temperature thresholds updated successfully")
-                    Toast.makeText(requireContext(), "Device settings updated", Toast.LENGTH_SHORT).show()
-                } else {
-                    val errorMsg = responseTemp.errorBody()?.string()
-                    Log.e("DeviceSettingsFragment", "Temp update failed: $errorMsg")
-                    Toast.makeText(requireContext(), "Failed to update temperature", Toast.LENGTH_SHORT).show()
-                }
+                // Switch to view mode and reload updated values
+                setEditMode(false)
+                currentImei?.let { loadDeviceSettings(it) }
+
             } catch (e: Exception) {
-                Log.e("DeviceSettingsFragment", "Exception updating temps: ${e.localizedMessage}", e)
+                Log.e("DeviceSettingsFragment", "Exception updating settings: ${e.localizedMessage}", e)
                 Toast.makeText(requireContext(), "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         }
-
-        // 3️⃣ Door alert updates would need a separate endpoint if available
     }
-
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    interface OnEditModeChangeListener {
+        fun onEditModeChanged(isEditMode: Boolean)
     }
 }

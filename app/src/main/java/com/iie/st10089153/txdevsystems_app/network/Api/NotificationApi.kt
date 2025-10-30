@@ -1,6 +1,5 @@
 package com.iie.st10089153.txdevsystems_app.network.Api
 
-
 import com.iie.st10089153.txdevsystems_app.ui.notifications.AvailableUnitsRequest
 import com.iie.st10089153.txdevsystems_app.ui.notifications.Trigger
 import com.iie.st10089153.txdevsystems_app.ui.notifications.TriggersRequest
@@ -19,4 +18,19 @@ interface NotificationsApi {
     suspend fun getTriggers(
         @Body request: TriggersRequest
     ): Response<List<Trigger>>
+
+    @POST("user/fcm-token")
+    suspend fun registerFcmToken(
+        @Body request: FcmTokenRequest
+    ): Response<FcmTokenResponse>
 }
+
+data class FcmTokenRequest(
+    val token: String,
+    val device_type: String = "android"
+)
+
+data class FcmTokenResponse(
+    val success: Boolean,
+    val message: String?
+)

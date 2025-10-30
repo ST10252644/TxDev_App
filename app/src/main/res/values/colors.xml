@@ -11,11 +11,14 @@
     <color name="primary">#B8ED55</color>
     <color name="secondary">#121212</color>
     <color name="tertiary">#2c2c2c</color>
-    <color name="tertiary_old">#1d1d1d</color>
+    <color name="tertiary_old">#1C1C1C</color>
     <color name="text">#ffffff</color>
     <color name="uneditable">#9E9E9E</color>
     <color name="green_success">#B8ED55</color> <!-- example green -->
     <color name="red_error">#EE0202</color>     <!-- example red -->
+    <color name="blue_cool">#007AFF</color>
+    <color name="orange_offline">#EB8C27</color>
+
 
     <color name="calendar_blue">#55BFED</color>
 

@@ -34,11 +34,16 @@ class HomeFragment : Fragment() {
 
         setupObservers()
         setupRecyclerView()
+
+        setupSwipeRefresh()
+
         loadUserInfo()
         loadDevices()
 
         return binding.root
     }
+
+
 
     private fun setupObservers() {
         homeViewModel.greetingText.observe(viewLifecycleOwner) { greeting ->
@@ -47,6 +52,7 @@ class HomeFragment : Fragment() {
 
         homeViewModel.subtitleText.observe(viewLifecycleOwner) { subtitle ->
             binding.subtitleText.text = subtitle
+
         }
     }
 
@@ -54,9 +60,23 @@ class HomeFragment : Fragment() {
         binding.deviceRecyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefreshHome.setOnRefreshListener {
+            loadUserInfo()
+            loadDevices()
+        }
+    }
+
+   
+
+      
+
+
     private fun loadUserInfo() {
         val accountApi = RetrofitClient.getAccountApi(requireContext())
         val accountCall = accountApi.lookupAccount(LookupAccountRequest())
+
 
         accountCall.enqueue(object : Callback<AccountResponse> {
             override fun onResponse(
@@ -88,11 +108,11 @@ class HomeFragment : Fragment() {
                 call: Call<List<AvailableUnit>>,
                 response: Response<List<AvailableUnit>>
             ) {
+                binding.swipeRefreshHome.isRefreshing = false // ✅ stop spinner
+
                 if (response.isSuccessful && response.body() != null) {
                     val units = response.body()!!
-
                     if (units.isNotEmpty()) {
-                        // Create sectioned list
                         val sectionedItems = SectionedDeviceAdapter.createSectionedList(units)
                         binding.deviceRecyclerView.adapter = SectionedDeviceAdapter(sectionedItems)
                     } else {
@@ -104,10 +124,12 @@ class HomeFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<List<AvailableUnit>>, t: Throwable) {
+                binding.swipeRefreshHome.isRefreshing = false // stop spinner even on error
                 Toast.makeText(requireContext(), "Error: ${t.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         })
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

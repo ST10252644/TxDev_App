@@ -10,7 +10,9 @@
     <string name="status_offline">Offline</string>
     <string name="last_refreshed_format">Last refreshed: %s</string>
 
-    <string name="hoender_hok_1">Hoender hok 1</string>
+    <string name="hoender_hok_1">Temperature Chart</string>
+    <string name="hoender_hok_2">Battery Chart</string>
+    <string name="hoender_hok_3">Door Chart</string>
     <string name="day">Day</string>
     <string name="week">Week</string>
     <string name="month">Month</string>
