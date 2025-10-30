@@ -1,5 +1,6 @@
 package com.iie.st10089153.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -30,9 +31,30 @@ class ViewProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupClickListeners()
+
         fetchUserProfile()
+
+        // Handle logout
+        binding.btnLogout.setOnClickListener {
+            logoutUser()
+        }
     }
+
+    private fun logoutUser() {
+        val sessionManager = com.iie.st10089153.txdevsystems_app.utils.SessionManager(requireContext())
+
+        // Clear saved session
+        sessionManager.clearSession()
+
+        // Navigate to LoginActivity and clear back stack
+        val intent = Intent(requireContext(), com.iie.st10089153.txdevsystems_app.ui.login.LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+
+        requireActivity().finish()
+    }
+
+
 
     private fun setupClickListeners() {
         binding.btnBack.setOnClickListener {

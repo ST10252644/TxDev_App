@@ -93,9 +93,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
             <!-- First Name Field -->
@@ -134,9 +132,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
             <!-- Last Name Field -->
@@ -175,9 +171,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
             <!-- Cell Number Field -->
@@ -216,9 +210,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
             <!-- Email Field -->
@@ -257,9 +249,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
             <!-- Phone Number Field -->
@@ -298,9 +288,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
             <!-- Address Field -->
@@ -339,9 +327,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#333333" />
-
                 </LinearLayout>
-
             </LinearLayout>
 
             <!-- Account Created Field -->
@@ -360,33 +346,42 @@
                     android:textSize="16sp"
                     android:layout_marginEnd="16dp" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tvAccountCreated"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvAccountCreated"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:gravity="center_vertical"
-                        android:textColor="#888888"
-                        android:textSize="16sp"
-                        android:text=""
-                        android:paddingBottom="8dp" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#333333" />
-
-                </LinearLayout>
-
+                    android:gravity="center_vertical"
+                    android:textColor="#888888"
+                    android:textSize="16sp"
+                    android:text=""
+                    android:paddingBottom="8dp" />
             </LinearLayout>
 
         </LinearLayout>
-
     </ScrollView>
+
+    <!-- Logout button at bottom -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="16dp"
+            android:text="LOG OUT"
+            android:textAllCaps="true"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:padding="16dp"
+            android:backgroundTint="#D32F2F"
+            android:fontFamily="sans-serif-medium"
+            android:elevation="6dp" />
+
+    </LinearLayout>
 
 </LinearLayout>
