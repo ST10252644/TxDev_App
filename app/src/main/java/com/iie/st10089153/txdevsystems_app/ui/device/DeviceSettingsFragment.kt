@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 
 class DeviceSettingsFragment : Fragment() {
 
+    private val TAG = "DeviceSettingsFragment"
     private var _binding: FragmentDeviceSettingsBinding? = null
     private val binding get() = _binding!!
     private lateinit var api: DeviceApi
@@ -90,11 +91,14 @@ class DeviceSettingsFragment : Fragment() {
     }
 
     private fun loadDeviceSettings(imei: String) {
+        Log.d(TAG, "Loading device settings for IMEI: $imei")
         lifecycleScope.launch {
             try {
                 val response = api.getConfigByImei(ConfigByImeiRequest(imei))
                 if (response.isSuccessful) {
                     response.body()?.let { config ->
+                        Log.d(TAG, "Loaded config - temp_min: ${config.temp_min}, temp_max: ${config.temp_max}")
+
                         binding.tvDeviceID.text = config.imei
                         binding.etDeviceName.setText(config.unit_id)
 
@@ -128,9 +132,11 @@ class DeviceSettingsFragment : Fragment() {
                         if (spinnerIndex >= 0) binding.spinnerDoorType.setSelection(spinnerIndex)
                     }
                 } else {
+                    Log.e(TAG, "Failed to load settings: ${response.code()}")
                     Toast.makeText(requireContext(), "Failed to load device settings", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
+                Log.e(TAG, "Error loading settings", e)
                 Toast.makeText(requireContext(), "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         }
@@ -138,13 +144,16 @@ class DeviceSettingsFragment : Fragment() {
 
     private fun saveDeviceSettings() {
         val imei = currentImei ?: run {
-            Log.e("DeviceSettingsFragment", "Cannot save: IMEI is null")
+            Log.e(TAG, "Cannot save: IMEI is null")
             return
         }
 
         val unitName = binding.etDeviceName.text.toString()
-        val maxTemp = binding.etHighTemp.text.toString().toIntOrNull() ?: 0
-        val minTemp = binding.etLowTemp.text.toString().toIntOrNull() ?: 0
+        // ✅ Changed: Keep as String instead of converting to Int
+        val maxTempStr = binding.etHighTemp.text.toString()
+        val minTempStr = binding.etLowTemp.text.toString()
+
+        Log.d(TAG, "Saving settings - High Temp (max): $maxTempStr, Low Temp (min): $minTempStr")
 
         // Get total minutes entered by user
         val totalMinutes = binding.etDoorAlertTime.text.toString()
@@ -161,20 +170,36 @@ class DeviceSettingsFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                api.updateUnitName(UpdateUnitNameRequest(imei, unitName))
-                api.setTempThresholds(TempThresholdRequest(imei, maxTemp, minTemp))
-                api.setDoorAlarmMin(DoorAlarmMinRequest(imei, doorMin))
-                // If your API also needs hours, you may need to call another endpoint or modify the request
-                api.setSwitchPolarity(SwitchPolarityRequest(imei, switchPolarity))
+                Log.d(TAG, "Calling API - setTempThresholds(imei=$imei, maxTemp=$maxTempStr, minTemp=$minTempStr)")
 
-                Toast.makeText(requireContext(), "Device settings updated", Toast.LENGTH_SHORT).show()
+                val nameResponse = api.updateUnitName(UpdateUnitNameRequest(imei, unitName))
+                Log.d(TAG, "updateUnitName response: ${nameResponse.code()}")
 
-                // Switch to view mode and reload updated values
-                setEditMode(false)
-                currentImei?.let { loadDeviceSettings(it) }
+                val tempResponse = api.setTempThresholds(TempThresholdRequest(imei, maxTempStr, minTempStr))
+                if (tempResponse.isSuccessful) {
+                    Log.d(TAG, "setTempThresholds response: ${tempResponse.code()} - SUCCESS")
+                } else {
+                    val errorBody = tempResponse.errorBody()?.string()
+                    Log.e(TAG, "setTempThresholds FAILED: ${tempResponse.code()}")
+                    Log.e(TAG, "Error body: $errorBody")
+                    Toast.makeText(requireContext(), "Failed to update temperature: $errorBody", Toast.LENGTH_LONG).show()
+                }
+
+                val doorResponse = api.setDoorAlarmMin(DoorAlarmMinRequest(imei, doorMin))
+                Log.d(TAG, "setDoorAlarmMin response: ${doorResponse.code()}")
+
+                val polarityResponse = api.setSwitchPolarity(SwitchPolarityRequest(imei, switchPolarity))
+                Log.d(TAG, "setSwitchPolarity response: ${polarityResponse.code()}")
+
+                if (tempResponse.isSuccessful) {
+                    Toast.makeText(requireContext(), "Device settings updated", Toast.LENGTH_SHORT).show()
+                    // Switch to view mode and reload updated values
+                    setEditMode(false)
+                    currentImei?.let { loadDeviceSettings(it) }
+                }
 
             } catch (e: Exception) {
-                Log.e("DeviceSettingsFragment", "Exception updating settings: ${e.localizedMessage}", e)
+                Log.e(TAG, "Exception updating settings: ${e.localizedMessage}", e)
                 Toast.makeText(requireContext(), "Error: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
             }
         }

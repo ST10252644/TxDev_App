@@ -1,6 +1,7 @@
 package com.iie.st10089153.txdevsystems_app.ui.dashboard
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,8 @@ import com.iie.st10089153.txdevsystems_app.ui.dashboard.views.GaugeBackgroundVie
 
 class GaugeAdapter(private val items: List<GaugeCard>) :
     RecyclerView.Adapter<GaugeAdapter.GaugeViewHolder>() {
+
+    private val TAG = "GaugeAdapter"
 
     class GaugeViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val iconView: ImageView = view.findViewById(R.id.icon_view)
@@ -34,6 +37,8 @@ class GaugeAdapter(private val items: List<GaugeCard>) :
     override fun onBindViewHolder(holder: GaugeViewHolder, position: Int) {
         val item = items[position]
 
+        Log.d(TAG, "Binding item at position $position: ${item.name}")
+
         // Set texts and icon
         holder.iconView.setImageResource(item.iconRes)
         holder.statusText.text = item.statusText
@@ -43,6 +48,8 @@ class GaugeAdapter(private val items: List<GaugeCard>) :
         holder.gaugeContainer.removeAllViews()
 
         if (item.minValue != null && item.maxValue != null) {
+            Log.d(TAG, "${item.name} - min: ${item.minValue}, max: ${item.maxValue}, current: ${item.statusText}")
+
             // Decide which gauge type to inflate
             val gaugeView = if (item.type == "battery") {
                 LayoutInflater.from(holder.view.context)
@@ -57,12 +64,18 @@ class GaugeAdapter(private val items: List<GaugeCard>) :
             // Animate the correct gauge
             if (item.type == "battery") {
                 val batteryGauge = gaugeView.findViewById<BatteryGaugeView>(R.id.batteryGaugeView)
-                batteryGauge.animateToValue(item.statusText?.toFloatOrNull() ?: item.minValue.toFloat(), 1000)
+                val batteryValue = item.statusText?.toFloatOrNull() ?: item.minValue.toFloat()
+                Log.d(TAG, "Battery gauge - animating to: $batteryValue")
+                batteryGauge.animateToValue(batteryValue, 1000)
                 holder.measurementText.text = "Volts"
             } else {
                 val tempGauge = gaugeView.findViewById<GaugeBackgroundView>(R.id.gaugeBackgroundView)
+                val tempValue = item.statusText?.toFloatOrNull() ?: item.minValue.toFloat()
+                Log.d(TAG, "Temperature gauge - updateRanges(${item.minValue}, ${item.maxValue})")
+                Log.d(TAG, "Temperature gauge - animating to: $tempValue")
+
                 tempGauge.updateRanges(item.minValue.toFloat(), item.maxValue.toFloat())
-                tempGauge.animateToValue(item.statusText?.toFloatOrNull() ?: item.minValue.toFloat(), 1000)
+                tempGauge.animateToValue(tempValue, 1000)
                 holder.measurementText.text = "°C"
             }
 
@@ -70,6 +83,7 @@ class GaugeAdapter(private val items: List<GaugeCard>) :
 
         } else {
             // Fallback: show image if gauge not available
+            Log.d(TAG, "${item.name} - no min/max values, showing static image")
             val imageView = ImageView(holder.view.context).apply {
                 setImageResource(item.gaugeImageRes)
                 layoutParams = FrameLayout.LayoutParams(
