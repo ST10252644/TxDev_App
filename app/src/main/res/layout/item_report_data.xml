@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <!-- Temperature -->
+    <TextView
+        android:id="@+id/tvTempNow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="+17°"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:gravity="center" />
+
+    <!-- Door Status Icon -->
+    <ImageView
+        android:id="@+id/ivDoorStatus"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_weight="1"
+        android:src="@drawable/ic_door_close"
+        android:scaleType="centerInside" />
+
+    <!-- Power Status Icon -->
+    <ImageView
+        android:id="@+id/ivPowerStatus"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_weight="1"
+        android:src="@drawable/ic_power"
+        android:scaleType="centerInside" />
+
+    <!-- Battery Status Icon -->
+    <ImageView
+        android:id="@+id/ivBatteryStatus"
+        android:layout_width="0dp"
+        android:layout_height="24dp"
+        android:layout_weight="1"
+        android:src="@drawable/ic_battery_full"
+        android:scaleType="centerInside" />
+
+    <!-- Timestamp -->
+    <TextView
+        android:id="@+id/tvTimestamp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:text="2025-06-24 21:52:24"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:gravity="center" />
+
+</LinearLayout>

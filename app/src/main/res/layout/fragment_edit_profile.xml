@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_background"
+    android:orientation="vertical">
+
+    <!-- ScrollView for form content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Username Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Username"
+                    android:textColor="@color/text"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/etUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@android:color/transparent"
+                        android:hint="Enter username"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/uneditable" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- First Name Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="First Name"
+                    android:textColor="@color/text"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/etFirstName"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@android:color/transparent"
+                        android:hint="Enter first name"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/uneditable" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Last Name Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Last Name"
+                    android:textColor="@color/text"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/etLastName"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@android:color/transparent"
+                        android:hint="Enter last name"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/uneditable" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Cell Number Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Cell Number"
+                    android:textColor="@color/text"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/etCellNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@android:color/transparent"
+                        android:hint="Enter cell number"
+                        android:inputType="phone"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/uneditable" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Email Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Email"
+                    android:textColor="@color/text"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@android:color/transparent"
+                        android:hint="Enter email"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/uneditable" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Phone Number Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Phone Number"
+                    android:textColor="@color/text"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/etPhoneNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@android:color/transparent"
+                        android:hint="Enter phone number"
+                        android:inputType="phone"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/uneditable" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Address Field -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Address"
+                    android:textColor="@color/text"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/etAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="@android:color/transparent"
+                        android:hint="Enter address"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/uneditable" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Account Created Field (Read-only) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="32dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:text="Account created"
+                    android:textColor="@color/text"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="16dp"
+                    android:fontFamily="@font/poppinsmedium"
+                    android:letterSpacing="0.05" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvAccountCreated"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:gravity="center_vertical"
+                        android:text="2025-06-25 15:55:29"
+                        android:textColor="@color/uneditable"
+                        android:textColorHint="@color/uneditable"
+                        android:textSize="16sp"
+                        android:enabled="false"
+                        android:fontFamily="@font/poppinsregular"
+                        android:letterSpacing="0.05"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/uneditable" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Save Changes Button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp">
+
+
+        <Button
+            android:id="@+id/btnSaveChanges"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Save Changes"
+            android:backgroundTint="#B8ED55"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:cornerRadius="2dp"
+            android:elevation="2dp"
+            android:fontFamily="@font/poppinssemibold"
+            app:layout_constraintHorizontal_bias="1.0"/>
+
+    </LinearLayout>
+
+</LinearLayout>

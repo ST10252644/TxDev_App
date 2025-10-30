@@ -1,16 +1,17 @@
 package com.iie.st10089153.txdevsystems_app.ui.dashboard
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.iie.st10089153.txdevsystems_app.R
 import com.iie.st10089153.txdevsystems_app.ui.dashboard.models.GaugeCard
-
+import com.iie.st10089153.txdevsystems_app.ui.dashboard.views.BatteryGaugeView
+import com.iie.st10089153.txdevsystems_app.ui.dashboard.views.GaugeBackgroundView
 
 class GaugeAdapter(private val items: List<GaugeCard>) :
     RecyclerView.Adapter<GaugeAdapter.GaugeViewHolder>() {
@@ -29,21 +30,57 @@ class GaugeAdapter(private val items: List<GaugeCard>) :
         return GaugeViewHolder(view)
     }
 
+    @SuppressLint("MissingInflatedId")
     override fun onBindViewHolder(holder: GaugeViewHolder, position: Int) {
         val item = items[position]
 
+        // Set texts and icon
         holder.iconView.setImageResource(item.iconRes)
         holder.statusText.text = item.statusText
         holder.nameText.text = item.name
 
-        if (item.measurement.isNullOrEmpty()) {
-            holder.measurementText.visibility = View.INVISIBLE // hides “Volts” if not needed
-        } else {
-            holder.measurementText.text = item.measurement
-        }
+        // Clear any previous views in the container
+        holder.gaugeContainer.removeAllViews()
 
-        holder.gaugeContainer.background =
-            ContextCompat.getDrawable(holder.view.context, item.gaugeImageRes)
+        if (item.minValue != null && item.maxValue != null) {
+            // Decide which gauge type to inflate
+            val gaugeView = if (item.type == "battery") {
+                LayoutInflater.from(holder.view.context)
+                    .inflate(R.layout.battery_gauge, holder.gaugeContainer, false)
+            } else {
+                LayoutInflater.from(holder.view.context)
+                    .inflate(R.layout.temp_gauge, holder.gaugeContainer, false)
+            }
+
+            holder.gaugeContainer.addView(gaugeView)
+
+            // Animate the correct gauge
+            if (item.type == "battery") {
+                val batteryGauge = gaugeView.findViewById<BatteryGaugeView>(R.id.batteryGaugeView)
+                batteryGauge.animateToValue(item.statusText?.toFloatOrNull() ?: item.minValue.toFloat(), 1000)
+                holder.measurementText.text = "Volts"
+            } else {
+                val tempGauge = gaugeView.findViewById<GaugeBackgroundView>(R.id.gaugeBackgroundView)
+                tempGauge.updateRanges(item.minValue.toFloat(), item.maxValue.toFloat())
+                tempGauge.animateToValue(item.statusText?.toFloatOrNull() ?: item.minValue.toFloat(), 1000)
+                holder.measurementText.text = "°C"
+            }
+
+            holder.measurementText.visibility = View.VISIBLE
+
+        } else {
+            // Fallback: show image if gauge not available
+            val imageView = ImageView(holder.view.context).apply {
+                setImageResource(item.gaugeImageRes)
+                layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                )
+                scaleType = ImageView.ScaleType.CENTER_INSIDE
+            }
+            holder.gaugeContainer.addView(imageView)
+            holder.measurementText.visibility = View.INVISIBLE
+        }
     }
 
     override fun getItemCount(): Int = items.size
