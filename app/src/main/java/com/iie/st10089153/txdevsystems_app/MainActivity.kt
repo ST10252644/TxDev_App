@@ -103,7 +103,42 @@ class MainActivity : AppCompatActivity(), DeviceSettingsFragment.OnEditModeChang
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         val navView: BottomNavigationView = binding.navView
+
+        // Configure bottom navigation colors
+        val states = arrayOf(
+            intArrayOf(android.R.attr.state_checked),   // Selected
+            intArrayOf(-android.R.attr.state_checked)   // Unselected
+        )
+
+        val colors = intArrayOf(
+            ContextCompat.getColor(this, R.color.tx_green),    // Selected (Green)
+            ContextCompat.getColor(this, R.color.uneditable)   // Unselected (Gray)
+        )
+
+        val colorStateList = android.content.res.ColorStateList(states, colors)
+        navView.itemIconTintList = colorStateList
+        navView.itemTextColor = colorStateList
+
         navView.setupWithNavController(navController)
+
+        // Manual click listener to ensure proper highlighting
+        navView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    navController.navigate(R.id.navigation_home)
+                    true
+                }
+                R.id.navigation_notifications -> {
+                    navController.navigate(R.id.navigation_notifications)
+                    true
+                }
+                R.id.navigation_profile -> {
+                    navController.navigate(R.id.navigation_profile)
+                    true
+                }
+                else -> false
+            }
+        }
 
         val appBarConfiguration = AppBarConfiguration(
             setOf(
